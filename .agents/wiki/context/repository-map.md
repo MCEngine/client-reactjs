@@ -27,14 +27,15 @@ there once, and this page links rather than repeats them.
 | `src/api/` | The one place that calls `fetch`, the server's payload types, and the error types. |
 | `src/auth/AuthContext.tsx` | The access token, held in memory only. |
 | `src/components/` | `ConfirmButton` and the async-read helpers. |
-| `src/routes/` | One file per page. |
+| `src/routes/` | One file per page, grouped into `account/`, `org/` and `fleet/`. |
+| `src/routes/RequireAuth.tsx` | Redirects an anonymous visitor. A convenience, not a guard. |
 | `test/` | Vitest and Testing Library, plus `helpers.tsx` for a stubbed transport. |
 
 ## What is deliberately absent
 
-**There are almost no pages.** The shell, the product list and a not-found route are all
-that exist. No sign-in form, no account or organization administration, no token management,
-no `/product/*` settings pages, no fleet view — those are the next two tasks.
+**The `/product/*` pages do not exist yet** — the product page, its settings landing, the
+version upload form, and the general page carrying the id cooldown and the confirmed delete.
+Everything else the panel needs is here.
 
 There is no styling either: the markup is semantic and unstyled, so a page is written once
 and the look is applied to all of them at the end rather than per page. No CI workflow;
@@ -85,6 +86,11 @@ Never an `INDEX.md`. Never a third documentation tree. The authority is
   recovers.
 * **`signOut` never rejects.** The person clicked it; they are signed out locally whatever
   the server said, and there is no recovery a caller could perform with the error.
+* **Every write goes through `Form`.** It submits once at a time and renders the failure; a
+  bare `onClick` firing an uncaught promise looks to a person like a button that does nothing.
+* **A rule the server owns is rendered, never recomputed.** The cooldown date comes from the
+  error's `available_at`; a disabled control carries the server's reason in a `title`. A
+  second implementation would eventually disagree, and the browser would be the wrong copy.
 * **Test by role and name, not by test id.** A test that can only find an element by an
   attribute added for the test is not checking what the person sees.
 * **Creating a log directory is a version claim** and needs explicit approval. Appending to

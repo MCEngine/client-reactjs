@@ -22,6 +22,12 @@ release, and is appended to as each task lands.
   cancel beside it, and a typed phrase where the server also requires one.
 - The shell, a product list and a not-found route.
 - `wiki/environments/setup.md` and `wiki/environments/env.md`.
+- Sign in and register, account settings with the handle cooldown, multiple email addresses,
+  the signed-in device list, and API token management — a minted token shown once and never
+  stored.
+- Creating an organization, and managing its members, roles and storage usage.
+- The fleet view: registering a server (its key shown once, for `config.yml`) and seeing the
+  drift between what each server has installed and what it should have.
 
 ## Changed
 

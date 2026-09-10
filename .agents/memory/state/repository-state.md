@@ -21,10 +21,13 @@ Plus the build and the shell: `package.json` (`@mcengine/client-reactjs` at `0.0
 `tsconfig.json`, `vite.config.ts`, `index.html`, `.gitignore`, `.env.example`,
 `package-lock.json`, `src/` and `test/`, and `wiki/environments/{setup,env}.md`.
 
-**Does not exist:** almost every page. The shell, the product list and a not-found route are
-all that are mounted. No sign-in form, no account or organization administration, no token
-management, no `/product/*` settings pages, no fleet view. No styling — the markup is
-semantic and unstyled on purpose. No CI workflow.
+Plus the account, organization and fleet pages: `src/routes/account/`, `src/routes/org/`,
+`src/routes/fleet/`, `src/routes/RequireAuth.tsx`, and the `Form`, `Field` and
+`CooldownNotice` components.
+
+**Does not exist:** the `/product/*` pages — the product page itself, its settings landing,
+the version upload form, and the general page with the id cooldown and the confirmed delete.
+No styling — the markup is semantic and unstyled on purpose. No CI workflow.
 
 ## Stack
 
@@ -34,13 +37,14 @@ jsdom. Three runtime dependencies — React, React DOM and the router. No state 
 data-fetching library, no component library: the panel holds no state of its own, and a
 twelve-line `useAsync` covers what it needs from a read.
 
-**Verified:** `npm run check` green — `tsc --noEmit` clean and 22 tests across three suites.
-`npm run build` produces a 268 kB bundle, 85 kB gzipped.
+**Verified:** `npm run check` green — `tsc --noEmit` clean and 34 tests across four suites.
+`npm run build` produces a 285 kB bundle, 89 kB gzipped.
 
 ## Next step
 
-The account pages: sign in and register, the signed-in device list, namespace settings with
-the handle cooldown, organization members and roles, and token management.
+The product pages: `/product/:product_id/`, `/product/:product_id/settings/`,
+`/product/:product_id/setting/update/`, and `/product/:product_id/setting/general/` with the
+thirty-day id cooldown and a delete that requires the id to be repeated.
 
 The full ordered plan is in `MCEngine/plugin-manager` at
 `.agents/memory/tasks/mcpluginmanager-platform.md`.
