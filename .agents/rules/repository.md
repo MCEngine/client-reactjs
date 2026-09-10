@@ -36,6 +36,13 @@ memory.
   or revoking a token shows what will be lost, offers cancel, and requires confirm.
 * **Never put a secret in the bundle.** No API keys, no client secrets. A token minted in
   the panel is displayed once, from the server's response, and never persisted by the panel.
+* **The access token lives in memory and nowhere else.** Not `localStorage`, not a
+  non-HttpOnly cookie. A reload recovers the session through the refresh cookie the panel
+  cannot read, which is why it never has to store anything. There is a test for this.
+* **`src/api/client.ts` is the only place that calls `fetch`.** A component that reaches for
+  it directly bypasses the bearer header, the credential mode and the 401 retry.
+* **`src/api/types.ts` follows the server and never leads it.** It adds no field the server
+  does not send, and an optional property is optional because the server omits it.
 * **API changes come from the server repository.** `MCEngine/server-expressjs` owns the
   contract; this repository follows it. When a route or payload changes, update the calling
   code and the documentation in the same commit — `{shared}/rules/change-propagation.md`.
@@ -45,13 +52,15 @@ memory.
 
 ## Build and test commands
 
-**None yet.** This repository currently contains the agent instruction system, the two wiki
-trees, `README.md` and `LICENSE`. There is no `package.json`, so there is nothing to install
-and nothing to run.
+| Command | Purpose |
+|---|---|
+| `npm run check` | Typecheck, then the full suite. **This is what "verify" means here.** |
+| `npm run typecheck` | `tsc --noEmit` over `src/` and `test/` |
+| `npm test` | Vitest with Testing Library, once |
+| `npm run build` | Typecheck, then produce `dist/` |
+| `npm run dev` | Vite dev server, with `/api` proxied to `localhost:3000` |
 
-The build, the scripts and the test harness arrive with the React skeleton task; this
-section and the repository map are rewritten by that task, and this line stops being true
-the moment it lands. **Do not infer commands that are not written here.**
+Full setup notes are in [`../../wiki/environments/setup.md`](../../wiki/environments/setup.md).
 
 ## Version carriers in this repository
 
@@ -59,6 +68,6 @@ the moment it lands. **Do not infer commands that are not written here.**
 
 | Carrier | Where |
 |---|---|
-| Package version | `package.json` — does not exist yet |
+| Package version | `package.json` |
 | Log directories | `wiki/logs/{Major}/{Minor}/{Patch}/` |
 | Git tags and release drafts | GitHub releases |

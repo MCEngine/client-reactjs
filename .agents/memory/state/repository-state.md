@@ -17,21 +17,30 @@ the `lxagents-agents-base` connector. It declares no overrides.
 `wiki/information/overview.md`, `wiki/logs/0/0/0/CHANGELOG.md`, `README.md`, and `LICENSE`
 (MIT, MCEngine, 2026 — already present, not written by the setup).
 
-**Does not exist:** every line of code. No `package.json`, no `src/`, no `index.html`, no
-`vite.config.ts`, no `.gitignore`, no lockfile, no tests, no CI. The version carrier itself
-— `version` in `package.json` — does not exist yet either; `0.0.0` is the agreed value for
-when it does.
+Plus the build and the shell: `package.json` (`@mcengine/client-reactjs` at `0.0.0`),
+`tsconfig.json`, `vite.config.ts`, `index.html`, `.gitignore`, `.env.example`,
+`package-lock.json`, `src/` and `test/`, and `wiki/environments/{setup,env}.md`.
+
+**Does not exist:** almost every page. The shell, the product list and a not-found route are
+all that are mounted. No sign-in form, no account or organization administration, no token
+management, no `/product/*` settings pages, no fleet view. No styling — the markup is
+semantic and unstyled on purpose. No CI workflow.
 
 ## Stack
 
-Decided in the plan, not yet installed: Vite, React and TypeScript, with a router and a
-typed API client over `@mcengine/server-expressjs`. The panel holds no state of its own.
+**Installed:** Vite 6, React 19, React Router 7, TypeScript 5.8 in strict mode with
+`noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`, Vitest with Testing Library and
+jsdom. Three runtime dependencies — React, React DOM and the router. No state library, no
+data-fetching library, no component library: the panel holds no state of its own, and a
+twelve-line `useAsync` covers what it needs from a read.
+
+**Verified:** `npm run check` green — `tsc --noEmit` clean and 22 tests across three suites.
+`npm run build` produces a 268 kB bundle, 85 kB gzipped.
 
 ## Next step
 
-The React skeleton: `package.json` at `0.0.0` naming `@mcengine/client-reactjs`, the Vite
-and TypeScript configuration, the router, the API client and the auth context. It waits on
-the server's API contract, which is documented before either client is written.
+The account pages: sign in and register, the signed-in device list, namespace settings with
+the handle cooldown, organization members and roles, and token management.
 
 The full ordered plan is in `MCEngine/plugin-manager` at
 `.agents/memory/tasks/mcpluginmanager-platform.md`.

@@ -1,0 +1,28 @@
+# --- [ Node ] ---
+node_modules/
+npm-debug.log*
+
+# --- [ Build output ] ---
+dist/
+*.tsbuildinfo
+.vite/
+
+# --- [ Test output ] ---
+coverage/
+
+# --- [ Local environment ] ---
+# Vite inlines anything prefixed VITE_ into the bundle, so .env here is not a
+# place for secrets -- it is a place for public configuration that varies by
+# deployment. It is still not committed, because the values do.
+.env
+.env.*
+!.env.example
+
+# --- [ Editors ] ---
+.vscode/
+.idea/
+*.swp
+
+# --- [ OS ] ---
+.DS_Store
+Thumbs.db
