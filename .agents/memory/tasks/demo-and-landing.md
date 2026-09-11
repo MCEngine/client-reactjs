@@ -44,3 +44,40 @@ Verified: `npm run check` green — 56 tests across six suites, 5 new. Rendered 
 shows `Products`.
 
 Next task depends on: nothing here. The auth forms are independent.
+
+### Task 4 — feat/auth-forms
+
+The sign-in page shows the demo account when the server has one; the register form confirms the
+password.
+
+**The sign-in page asks `GET /api/v1/meta` rather than being told at build time.** Whether a
+deployment has a demo account is the server's to answer, and the panel and the server are
+configured separately — one at build time, one at runtime. Baking credentials into the bundle
+would couple them at exactly the point they are decoupled.
+
+**A defect the existing suite caught, and my own test had missed.** The block was first written
+with `AsyncBoundary`, which renders a failure as an alert — so a deployment with no demo
+account, or one whose `/meta` read failed, showed an **error on its sign-in page**. The code
+comment claimed it showed nothing; it did not. `account.test.tsx` found it by failing with "found
+multiple elements with role alert", because it stubs no `/meta` route.
+
+My own test for that case asserted the form still rendered and stopped there, which is exactly
+why it passed while the page was wrong. It now also asserts **no alert is present**, and there is
+a second test for the plain no-demo-account case. A missing convenience must be invisible, not
+broken.
+
+**Confirm password is checked in the panel and nowhere else**, and a test asserts the register
+request is **not sent** when the two disagree. The server has no opinion about a second copy of a
+field — this is not a rule about accounts, it is a guard against a typo becoming an account
+nobody can sign in to, and before the request is the only moment that can be caught. Another test
+asserts no `confirmPassword` reaches the wire.
+
+**Registering is still offered on the sign-in page**, with a test, because the demo account is an
+addition rather than a replacement — which is what the request asked for.
+
+Verified: `npm run check` green — 64 tests across seven suites, 9 new. Rendered in Chromium with
+the demo account on: the credentials show, **zero alerts on the page**, and clicking *Fill the
+form* puts `demo@mcengine.local` in the email field.
+
+Next task depends on: nothing. The release is last.
+

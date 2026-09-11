@@ -10,6 +10,7 @@ export function Register() {
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   return (
     <main className="container narrow">
@@ -19,6 +20,16 @@ export function Register() {
       <Form
         submitLabel="Create account"
         onSubmit={async () => {
+          /*
+           * Checked here and nowhere else. The server has no opinion about a
+           * second copy of a field -- it is not a rule about accounts, it is a
+           * guard against a typo becoming an account nobody can sign in to,
+           * and the only moment that can be caught is before the request.
+           */
+          if (password !== confirmPassword) {
+            throw new Error('Those passwords do not match.');
+          }
+
           await register({ handle, displayName, email, password });
           void navigate('/');
         }}
@@ -39,6 +50,14 @@ export function Register() {
           onChange={setPassword}
           required
           hint="At least twelve characters. Length beats punctuation."
+        />
+        <Field
+          label="Confirm password"
+          type="password"
+          value={confirmPassword}
+          onChange={setConfirmPassword}
+          required
+          hint="Type it again. A typo here is an account you cannot sign in to."
         />
       </Form>
       <p className="muted">

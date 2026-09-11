@@ -58,6 +58,12 @@ one that asks.
 - `/` is a landing page: what MCPluginManager is, how the panel, the server and the plugin fit
   together, what it does differently, and where to start. The catalogue moved to `/products`.
 
+- The sign-in page shows a demo account's credentials when the server advertises one on
+  `GET /api/v1/meta`, with a button that fills the form — and says the account is shared.
+  Registering is still offered beside it.
+- The register form confirms the password. Two that disagree are refused in the panel, before
+  any request, because a typo there is an account nobody can sign in to.
+
 ## Changed
 
 - **The product page shows one version at a time, chosen from a dropdown**, instead of
