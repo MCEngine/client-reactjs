@@ -70,9 +70,20 @@ export function TokenManager({ basePath, ownerLabel }: TokenManagerProps) {
                   ))}
                 </ul>
                 <p className="muted">
-                  {token.last_used_at === undefined
-                    ? 'Never used'
-                    : `Last used ${new Date(token.last_used_at).toLocaleString()}`}
+                  {token.created_by === undefined ? (
+                    token.last_used_at === undefined ? (
+                      'Never used'
+                    ) : (
+                      `Last used ${new Date(token.last_used_at).toLocaleString()}`
+                    )
+                  ) : (
+                    <>
+                      Minted by <code>{token.created_by.handle}</code>
+                      {token.last_used_at === undefined
+                        ? ' · never used'
+                        : ` · last used ${new Date(token.last_used_at).toLocaleString()}`}
+                    </>
+                  )}
                 </p>
                 <ConfirmButton
                   label="Revoke"

@@ -74,3 +74,13 @@ Verified in Chromium rather than by reading the CSS: the grid's items went from
 `[card, chip-row]` to `[card, card]`, and the badge's box is inside the card's at 1280px and
 390px. The test now asserts containment with `within(card)`, which the previous `getByText` could
 not: it passed while the chip was in the next cell.
+
+### Task 5 — feat/token-creator
+
+`TokenManager` shows **Minted by `<handle>`** on each token that carries a creator, joined to the
+last-used line rather than added as a second one. `ApiToken` gained `created_by` as optional,
+which is what makes the page work against a server that has not been updated yet: the line is
+simply absent.
+
+Two cases — with a creator, and without — because the second is the one a stale server produces
+and a page that renders "Minted by undefined" would be worse than one that says nothing.

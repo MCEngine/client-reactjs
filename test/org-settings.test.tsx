@@ -129,3 +129,62 @@ describe('the address the members page used to have', () => {
     expect(await screen.findByRole('heading', { level: 1, name: 'Members' })).toBeInTheDocument();
   });
 });
+
+describe('who minted a token', () => {
+  it('is shown on the list, because an org token acts as the org', async () => {
+    const client = testClient(
+      stubFetch({
+        ...SIGNED_IN,
+        'GET /api/v1/orgs/acme/tokens': {
+          body: {
+            data: [
+              {
+                id: 't1',
+                name: 'release ci',
+                prefix: 'abcd1234',
+                scopes: ['artifact:write'],
+                created_at: '2026-03-01T00:00:00.000Z',
+                created_by: { id: '01BOB', handle: 'bob', display_name: 'Bob' },
+              },
+            ],
+            next_cursor: null,
+          },
+        },
+      }),
+    );
+
+    renderWithAuth(<App />, client, '/org/acme/setting/token');
+
+    // The token outlives whoever made it, so the list is where that has to be
+    // readable — the alternative is an audit query nobody runs.
+    expect(await screen.findByText(/Minted by/)).toBeInTheDocument();
+    expect(screen.getByText('bob')).toBeInTheDocument();
+  });
+
+  it('says nothing when the server did not send one', async () => {
+    const client = testClient(
+      stubFetch({
+        ...SIGNED_IN,
+        'GET /api/v1/orgs/acme/tokens': {
+          body: {
+            data: [
+              {
+                id: 't1',
+                name: 'release ci',
+                prefix: 'abcd1234',
+                scopes: ['artifact:write'],
+                created_at: '2026-03-01T00:00:00.000Z',
+              },
+            ],
+            next_cursor: null,
+          },
+        },
+      }),
+    );
+
+    renderWithAuth(<App />, client, '/org/acme/setting/token');
+
+    expect(await screen.findByText('Never used')).toBeInTheDocument();
+    expect(screen.queryByText(/Minted by/)).not.toBeInTheDocument();
+  });
+});
