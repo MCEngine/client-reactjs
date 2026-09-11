@@ -32,6 +32,12 @@ Plus the four `/product/*` pages: `src/routes/product/`.
 to `API_UPSTREAM` — the panel and the API are one origin by design, because the refresh cookie
 is `HttpOnly`. `wiki/environments/deployment.md` has the detail.
 
+**One origin is not a preference, it is the only supported configuration**, and the
+documentation now says so: the server has no CORS layer and hardcodes `SameSite=Lax`, so a
+bundle built with `VITE_API_BASE_URL` pointing elsewhere gets an unanswered preflight and a
+cookie the browser will not send. `API_UPSTREAM` is the variable that moves the API.
+`.agents/memory/decisions/same-origin-api.md` carries the measurements.
+
 **Styled, as of the Silver Glass pass.** `src/styles/{main,layout,components}.css`, imported in
 that order from `main.tsx`. `main.css` is the only file carrying a hex value. The system and the
 six rules a new page must hold to are in `.agents/design/`, which has an `AGENTS.md` row that

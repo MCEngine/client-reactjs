@@ -77,3 +77,12 @@ one that asks.
   whitespace and an empty segment would 404 with nothing useful to read.
 - `README.md` rewritten from a bare title into an overview: what the panel is, its place in
   the platform, and links into `wiki/`.
+- **`wiki/environments/env.md` now documents the runtime variables too, and says to leave
+  `VITE_API_BASE_URL` empty.** The page listed one key — the build-time one — so a reader
+  looking for the variable that points the panel at its API found the wrong one and set it. A
+  cross-origin build is not a supported configuration: the server emits no `Access-Control-*`
+  header and hardcodes the refresh cookie to `SameSite=Lax`, so the browser gets no answer to
+  its preflight and never sends the cookie. `deployment.md` gained the shape `API_UPSTREAM`
+  must take, what each malformed value does, and a warning that a hosting platform's single
+  environment panel can feed the image build.
+

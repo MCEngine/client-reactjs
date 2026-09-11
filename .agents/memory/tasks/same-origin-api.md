@@ -81,3 +81,9 @@ Every claim in these pages was measured rather than reasoned: the bundle was bui
 the server was booted and asked for a preflight, and the nginx template was rendered and run
 against a live upstream for each malformed value. The rendering is worth noting — `envsubst` is
 not installed here, so the first attempt tested an empty config that passed `nginx -t` happily.
+
+### Task 3 — chore/same-origin-api-release
+
+The changelog entry, the state file, and this record. `0.0.0` did not move: nothing shipped, and
+a documentation correction is not a release of its own — it is recorded under the version that
+carries the documentation it corrects.
