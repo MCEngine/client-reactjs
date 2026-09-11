@@ -107,4 +107,10 @@ one that asks.
   container is addressed with, and a `3xx` from the upstream is answered as `502` carrying the
   service's own error envelope — so the panel shows what is wrong instead of bouncing. The
   container also warns at start-up when `API_UPSTREAM` names a dotted host over plaintext.
+- **The nav opens the organization page.** A signed-in person now has *New organization* between
+  *Servers* and *Tokens*; before this the only link to `/org/new` was inside a closed accordion
+  on the landing page, so the page was unreachable once you had left `/`. It is named for the
+  page it opens rather than *Organizations*, because no endpoint lists an account's
+  organizations — every other org route needs a handle already known — so there is no list to
+  open. Signed-out visitors do not see it: the route is behind `RequireAuth`.
 
