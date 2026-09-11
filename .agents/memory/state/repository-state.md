@@ -42,15 +42,16 @@ jsdom. Three runtime dependencies — React, React DOM and the router. No state 
 data-fetching library, no component library: the panel holds no state of its own, and a
 twelve-line `useAsync` covers what it needs from a read.
 
-**Verified:** `npm run check` green — `tsc --noEmit` clean and 49 tests across five suites.
-`npm run build` produces a 292 kB bundle, 91 kB gzipped.
+**Verified:** `npm run check` green — `tsc --noEmit` clean and 50 tests across five suites.
+`npm run build` produces a 294.59 kB bundle, 91.57 kB gzipped.
 
 ## Next step
 
-**The twenty-task plan is finished and its record is closed.** Follow-up work opens a new
-record rather than appending to `../tasks/mcpluginmanager-platform.md`, which stays as the
-account of how this repository got here. The plan table itself is in
-`MCEngine/plugin-manager` at `.agents/memory/tasks/mcpluginmanager-platform.md`.
+**Two plans are finished and both records are closed**: the twenty-task platform plan
+(`../tasks/mcpluginmanager-platform.md`, table in `MCEngine/plugin-manager`) and the
+version-route plan (`../tasks/version-route.md`, table in `MCEngine/server-expressjs`), which
+moved publishing to `PUT /api/v1/products/:id/versions/:version`. Follow-up work opens a new
+record rather than appending to either.
 
 The candidates, in the order they matter: styling, which is now one pass over semantic markup
 rather than a retrofit; pagination controls, since the client and the payload types already

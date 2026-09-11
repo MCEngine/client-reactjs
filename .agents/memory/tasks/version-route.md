@@ -35,3 +35,14 @@ produces a 294.59 kB bundle, 91.57 kB gzipped. The fetch stub keys on method and
 asserts the form body carries no `version` key.
 
 Next task depends on: nothing. The release is last.
+
+### Task 4 — chore/version-route-release
+
+The release, in both repositories. Here it wrote this entry, the changelog line for the publish
+form, and `repository-state.md` brought current.
+
+**The version did not move.** `@mcengine/client-reactjs` stays at `0.0.0`, and
+`wiki/logs/0/0/0/` already existed, so this appends rather than making a version claim.
+
+Next task depends on: nothing. This closes this repository's part of the record.
+
