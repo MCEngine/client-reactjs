@@ -54,3 +54,12 @@ the nav carries a *Tokens* link to the personal list. Same accessible name, diff
 destinations, which is the ambiguous case rather than the harmless one; the card is now
 *Organization tokens*. The remaining duplicate is *Organization* in the nav and in the
 breadcrumb, which points at the same page and sits inside the Breadcrumb landmark.
+
+### Task 8 — chore/org-management-release
+
+The changelog entries, the state file, and this record. `0.0.0` did not move.
+
+**Left for later, deliberately:** an organization cannot be deleted from the panel, because no
+route deletes one — `DELETE /orgs/:handle` does not exist, and the transfer route is how an
+owner hands it on. The general page says what it can do and does not offer a button that would
+have to fail.
