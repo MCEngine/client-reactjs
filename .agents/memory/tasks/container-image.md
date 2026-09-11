@@ -74,3 +74,14 @@ What remains unverified is the image build itself: base image resolution, the `e
 nginx entrypoint performs, and layer caching. Those need a daemon.
 
 Next task depends on: nothing. The release is last.
+
+### Task 4 — chore/container-image-release
+
+The release, in both repositories. Here it wrote this entry and brought `repository-state.md`
+current; the plan table and the `PR` column are in `MCEngine/server-expressjs`.
+
+**The version did not move.** `@mcengine/client-reactjs` stays at `0.0.0`, and
+`wiki/logs/0/0/0/` already existed, so this appends rather than making a version claim.
+
+Next task depends on: nothing. This closes this repository's part of the record.
+

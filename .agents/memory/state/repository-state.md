@@ -27,6 +27,11 @@ Plus the account, organization and fleet pages: `src/routes/account/`, `src/rout
 
 Plus the four `/product/*` pages: `src/routes/product/`.
 
+**Ships as a container.** `Dockerfile` builds the bundle with Node and serves it from
+`nginxinc/nginx-unprivileged` on port 8080, with `docker/default.conf.template` proxying `/api`
+to `API_UPSTREAM` — the panel and the API are one origin by design, because the refresh cookie
+is `HttpOnly`. `wiki/environments/deployment.md` has the detail.
+
 **Does not exist:** styling. The markup is semantic and unstyled on purpose, so the look is
 applied to every page at once rather than reinvented per page. No CI workflow; none was
 asked for. No pagination controls, though the API client and the payload types both carry
@@ -47,14 +52,15 @@ twelve-line `useAsync` covers what it needs from a read.
 
 ## Next step
 
-**Two plans are finished and both records are closed**: the twenty-task platform plan
-(`../tasks/mcpluginmanager-platform.md`, table in `MCEngine/plugin-manager`) and the
-version-route plan (`../tasks/version-route.md`, table in `MCEngine/server-expressjs`), which
-moved publishing to `PUT /api/v1/products/:id/versions/:version`. Follow-up work opens a new
-record rather than appending to either.
+**Three plans are finished and all three records are closed**: the twenty-task platform plan
+(`../tasks/mcpluginmanager-platform.md`, table in `MCEngine/plugin-manager`), the version-route
+plan (`../tasks/version-route.md`, table in `MCEngine/server-expressjs`), which moved publishing
+to `PUT /api/v1/products/:id/versions/:version`, and the container-image plan
+(`../tasks/container-image.md`, table also in `MCEngine/server-expressjs`). Follow-up work opens
+a new record rather than appending to any of them.
 
 The candidates, in the order they matter: styling, which is now one pass over semantic markup
 rather than a retrofit; pagination controls, since the client and the payload types already
 carry the cursors; a sign-in through an OAuth provider, once `MCEngine/server-expressjs` has a
-provider redirect to send anyone to; and a CI workflow. A first shipping version is a version
-claim and therefore asks first.
+provider redirect to send anyone to; and a CI workflow that builds and pushes the image the
+Dockerfile now defines. A first shipping version is a version claim and therefore asks first.
