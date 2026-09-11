@@ -66,3 +66,49 @@ page. That is stronger than what it replaces, which is the bar for changing a te
 deleting coverage.
 
 Next task depends on: nothing beyond this record.
+
+### Task 2 — feat/version-picker
+
+The version list became a labelled `<select>` plus one version's detail. Same badges, chips,
+download link, checksum and changelog — for whichever version is selected.
+
+**A separate `VersionPicker` component, because the selection is state** and the render prop
+inside `AsyncBoundary` cannot call a hook.
+
+**Nothing is recomputed from the server's answer.** The default is the row the server marked
+`is_latest`, falling back to the first it sent; the options keep the order they arrived in. The
+panel sorting again would be a second implementation of `version_norm`, and the browser would
+eventually be the copy that is wrong.
+
+**The test that asserted the old behaviour was rewritten, not deleted, and covers more than
+before.** It now checks the option order, that the latest is selected on arrival, that its
+checksum is shown — and that the *unselected* version's checksum is **not on the page**. That
+last assertion is the one that matters: without it the old list could still be rendering below
+and nothing would fail. A second test picks the other version and asserts the detail swaps and
+the `latest` badge goes away.
+
+**A suspected accessibility defect was investigated and turned out not to exist.** Playwright
+reported the select's name as `"Version2.20.1 (latest) —"`, which looked like the selected
+option bleeding into the accessible name of every wrapped `<label>` in the panel. Checking
+Chromium's own computation instead — an exact-name role query — the name is exactly `"Version"`,
+for both the wrapped-label and `for=`-attribute patterns. The label pattern was left alone. The
+Playwright message was its own substring matching, which also matched the
+`aria-labelledby="versions-heading"` section.
+
+Verified in Chromium against the built bundle:
+
+| Check | Result |
+|---|---|
+| `npm run check` | green — 51 tests across five suites, one more than before |
+| Page height, 2 versions | 1274px |
+| Page height, **12** versions | **1274px** — the page no longer grows with the catalogue |
+| Horizontal overflow, 1280px and 390px | none |
+| Options rendered | `2.20.1 (latest) — release`, `2.19.0 — beta`, in the server's order |
+| Selected on arrival | `2.20.1` |
+| After picking `2.19.0` | download link becomes `AcmeTools-2.19.0.jar` |
+
+The constant height is the whole point, and it is measured rather than asserted: twelve versions
+render in exactly as much space as two.
+
+Next task depends on: nothing. The release closes the record.
+
