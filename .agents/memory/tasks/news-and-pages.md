@@ -103,3 +103,12 @@ registered server reports. Everything on it is something this software actually 
 Checked in Chromium at both widths. At 390px the two `<code>` blocks are wider than the viewport
 and the page is not: they are inside `pre.md-code`, which scrolls on its own. That is the
 design's rule for code rather than an exception to it.
+
+### Task 8 — chore/news-and-pages-release
+
+The changelog entries, the state file, and this record. `0.0.0` did not move.
+
+**Left for later, deliberately:** the news list shows a hidden item to an author with no way to
+filter for only the hidden ones, and there is no page listing every news item for editing — you
+reach one through the list or its address. Both want a route that does not exist yet rather than
+a guess at one.

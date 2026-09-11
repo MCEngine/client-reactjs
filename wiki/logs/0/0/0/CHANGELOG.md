@@ -131,4 +131,22 @@ one that asks.
 - **Each token says who minted it.** The organization's token page shows *Minted by `<handle>`*,
   from the `created_by` the server now returns. An organization's token acts as the organization
   and outlives whoever created it, so the list is where that has to be readable.
+- **The navigation is a rail on the left**, fixed rather than sticky, so it follows the scroll on
+  its own and scrolls inside itself when the list outgrows the viewport. Below 900px it is the
+  top bar and drawer it already was: a 236px rail on a 390px screen is most of the screen.
+- **News**: `/news` lists ten at a time and asks for more when the end of the list comes into
+  view, `/news/:news_id` renders one, `/news/create` and `/news/edit/:news_id` write them in
+  **Markdown**, and `/news/:news_id/settings` hides or deletes one behind a dialog.
+- `src/components/Markdown.tsx` — Markdown rendered as **React elements**, with no
+  `dangerouslySetInnerHTML` and therefore nothing to sanitize: a `<script>` in a body is a
+  paragraph reading `<script>`. A link whose scheme is not `http`, `https`, `mailto`, `/` or `#`
+  keeps its text and loses its link, because an `href` is the one vector building elements does
+  not close.
+- **`ConfirmButton` is a dialog over the page** rather than a panel that expands in place, with
+  escape and the scrim as cancels and focus starting on the safe button. Every destructive action
+  in the panel gets it.
+- `/ci-cd` — a GitHub Actions file and a GitLab CI file, written out whole and pointed at this
+  deployment, with `PLUGIN_ID` and `USER_TOKEN` explained and named as the developer's to rename.
+- `/policy` — what may be published, what is guaranteed about a download, and exactly what the
+  service stores.
 

@@ -27,6 +27,13 @@ Plus the account, organization and fleet pages: `src/routes/account/`, `src/rout
 
 Plus the four `/product/*` pages: `src/routes/product/`.
 
+**The navigation is a left rail above 900px** — `position: fixed`, scrolling inside itself — and
+the top bar below it. `.shell` holds the pages clear of a header that is out of the flow.
+
+**News lives here**: five routes under `/news`, bodies written and rendered as Markdown by
+`src/components/Markdown.tsx`, which builds React elements and never HTML. `/ci-cd` and `/policy`
+are reference pages that read nothing.
+
 **Organizations are administrable from the panel.** *Organization* in the nav opens `/org`, which
 lists what you belong to — `GET /me/orgs`, added for this — and creates one. Each has a settings
 landing at `/org/:handle/settings` and a page per subject under `/org/:handle/setting/`, mirroring
