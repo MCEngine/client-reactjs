@@ -57,6 +57,11 @@ one that asks.
 
 ## Changed
 
+- **The product page shows one version at a time, chosen from a dropdown**, instead of
+  rendering every published version in full. A product with twelve versions is now exactly as
+  long as one with two. The latest is selected on arrival; the order and the choice of latest
+  are the server's, not recomputed here.
+
 - **The publish form sends `PUT /api/v1/products/:id/versions/:version`**, with the version in
   the path and out of the body — the server refuses a body version rather than ignoring it. An
   empty version is caught before it becomes a path segment, because `required` is satisfied by

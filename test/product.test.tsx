@@ -102,18 +102,45 @@ describe('/product/:product_id/', () => {
     ).toBeInTheDocument();
   });
 
-  it('lists versions newest first, with the checksum a client verifies against', async () => {
+  it('offers versions newest first, and selects the latest on arrival', async () => {
     const client = testClient(stubFetch(base()));
     renderWithAuth(<App />, client, '/product/acme-tools');
 
-    const list = await screen.findByRole('list', { name: '' }).catch(() => undefined);
-    void list;
+    const select = await screen.findByLabelText('Version');
 
-    const versions = await screen.findAllByText(/^1\.\d+\.0$/);
     // 1.10.0 above 1.9.0: the server orders by the normalized form, and the
-    // panel does not re-sort.
-    expect(versions.map((v) => v.textContent)).toEqual(['1.10.0', '1.9.0']);
+    // panel does not re-sort. The options keep the order they arrived in.
+    expect(
+      within(select).getAllByRole('option').map((option) => option.textContent),
+    ).toEqual(['1.10.0 (latest) — release', '1.9.0 — release']);
+
+    // The latest is what a person almost always wants, so it is chosen already
+    // rather than being whichever row happens to be first.
+    expect(select).toHaveValue('1.10.0');
     expect(screen.getByText('a'.repeat(64))).toBeInTheDocument();
+
+    // The point of the picker: the versions that were not chosen are not on the
+    // page at all. Without this the list could still be rendered below and
+    // nothing would fail.
+    expect(screen.queryByText('b'.repeat(64))).not.toBeInTheDocument();
+    expect(screen.getByText(/2 versions published/)).toBeInTheDocument();
+  });
+
+  it('swaps the detail when another version is picked', async () => {
+    const client = testClient(stubFetch(base()));
+    renderWithAuth(<App />, client, '/product/acme-tools');
+
+    const select = await screen.findByLabelText('Version');
+    await userEvent.selectOptions(select, '1.9.0');
+
+    expect(screen.getByText('b'.repeat(64))).toBeInTheDocument();
+    expect(screen.queryByText('a'.repeat(64))).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: /Download AcmeTools-1\.9\.0\.jar/ }),
+    ).toBeInTheDocument();
+
+    // The badge follows the selection rather than the arrival state.
+    expect(screen.queryByText('latest')).not.toBeInTheDocument();
   });
 
   it('renders the description as text, never as markup', async () => {
