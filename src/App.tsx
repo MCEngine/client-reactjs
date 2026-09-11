@@ -4,6 +4,8 @@ import { useAuth } from './auth/AuthContext.js';
 import { Home } from './routes/Home.js';
 import { Products } from './routes/Products.js';
 import { NotFound } from './routes/NotFound.js';
+import { CiCd } from './routes/CiCd.js';
+import { Policy } from './routes/Policy.js';
 import { NewsList } from './routes/news/NewsList.js';
 import { NewsDetail } from './routes/news/NewsDetail.js';
 import { NewsCreate } from './routes/news/NewsCreate.js';
@@ -85,6 +87,9 @@ export function App() {
             </NavLink>
             <NavLink className={navLink} to="/news" onClick={close}>
               News
+            </NavLink>
+            <NavLink className={navLink} to="/ci-cd" onClick={close}>
+              Publishing from CI
             </NavLink>
 
             {status === 'loading' && (
@@ -170,6 +175,9 @@ export function App() {
             </RequireAuth>
           }
         />
+
+        <Route path="/ci-cd" element={<CiCd />} />
+        <Route path="/policy" element={<Policy />} />
 
         <Route path="/login" element={<SignIn />} />
         <Route path="/register" element={<Register />} />
@@ -309,6 +317,10 @@ export function App() {
           <span>
             This panel holds no state of its own — every fact on it comes from the central
             server.
+          </span>
+          <span className="site-footer__links">
+            <Link to="/policy">Policy</Link>
+            <Link to="/ci-cd">Publishing from CI</Link>
           </span>
         </div>
       </footer>
