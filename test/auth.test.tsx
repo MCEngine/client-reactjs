@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { App } from '../src/App.js';
 import { renderWithAuth, stubFetch, testClient } from './helpers.js';
@@ -71,8 +71,14 @@ describe('the auth provider', () => {
 
     // A person who clicked sign out must end up signed out locally whatever
     // the server said.
+    // The landing page links to sign in as well, so this is scoped to the nav —
+    // which is the thing the assertion is actually about.
     await waitFor(() => {
-      expect(screen.getByRole('link', { name: 'Sign in' })).toBeInTheDocument();
+      expect(
+        within(screen.getByRole('navigation', { name: 'Main' })).getByRole('link', {
+          name: 'Sign in',
+        }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -119,7 +125,7 @@ describe('the product list', () => {
       }),
     );
 
-    renderWithAuth(<App />, client);
+    renderWithAuth(<App />, client, '/products');
 
     /*
      * The whole card is the link, so without an explicit label its accessible
@@ -140,7 +146,7 @@ describe('the product list', () => {
       }),
     );
 
-    renderWithAuth(<App />, client);
+    renderWithAuth(<App />, client, '/products');
     expect(await screen.findByText('No products have been published yet.')).toBeInTheDocument();
   });
 
@@ -155,7 +161,7 @@ describe('the product list', () => {
       }),
     );
 
-    renderWithAuth(<App />, client);
+    renderWithAuth(<App />, client, '/products');
     expect(await screen.findByRole('alert')).toHaveTextContent('Something went wrong.');
   });
 });

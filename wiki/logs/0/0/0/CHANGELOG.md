@@ -55,6 +55,9 @@ one that asks.
   new page must hold to in `.agents/design/`, with an `AGENTS.md` row that fires on writing
   anything a person looks at.
 
+- `/` is a landing page: what MCPluginManager is, how the panel, the server and the plugin fit
+  together, what it does differently, and where to start. The catalogue moved to `/products`.
+
 ## Changed
 
 - **The product page shows one version at a time, chosen from a dropdown**, instead of
