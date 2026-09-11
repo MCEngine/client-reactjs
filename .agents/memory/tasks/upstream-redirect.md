@@ -65,3 +65,26 @@ is `DEMO_ACCOUNT_ENABLED` not being set and is already documented on both sides.
 ### Task 1 — chore/upstream-redirect-plan
 
 This record and its row in `.agents/index/memory-index.md`. Nothing else.
+
+### Task 2 — fix/upstream-host
+
+`docker/10-api-upstream.envsh` sends the upstream its own `Host`, always — nginx's default, and
+the reason the default is what it is. The port is left off when it is the scheme's own, so a
+public endpoint gets `Host: api.example.com` rather than an unusual `:443`. The script also
+warns at start-up when a dotted name is reached over plaintext, naming the exact value to write
+instead, because that is the misconfiguration that caused this.
+
+`docker/default.conf.template` stops forwarding an upstream redirect at all:
+`proxy_intercept_errors on` with `error_page 301 302 303 307 308` into a named location that
+returns `502` carrying the service's own error envelope, so the panel renders the reason through
+the same path as any other failure. `X-Forwarded-Proto` now comes from a `map` over the incoming
+header, since this container is addressed over plaintext behind whatever terminates TLS and
+`$scheme` was telling the API the session was insecure.
+
+Verified against a stand-in that redirects the way the platform's edge does — the request that
+used to come back as `301` to the panel's own URL now comes back as the `502` above — and
+against the live server over `https://`, which answered `200`. An echo upstream confirmed what
+it receives: `Host: <itself>`, `X-Forwarded-Host: panel.example.com`, `X-Forwarded-Proto: https`.
+
+`test/docker.test.ts` is 16 cases now. The one that matters most asserts the template never
+sends `Host: $host`, which is the line that turned a wrong variable into a loop.

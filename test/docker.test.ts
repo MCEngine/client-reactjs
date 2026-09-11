@@ -79,12 +79,23 @@ describe('the resolver', () => {
 describe('the upstream', () => {
   const resolv = () => withResolvConf('nameserver 10.0.0.2\n');
 
-  it('takes host:port as plaintext, and forwards the browser Host', () => {
+  it('takes host:port as plaintext, and asks the upstream for its own Host', () => {
     const env = sourceScript({ API_UPSTREAM: 'api:10000', RESOLV_CONF: resolv() });
     expect(env['API_PROXY_SCHEME']).toBe('http');
     expect(env['API_PROXY_ADDR']).toBe('api:10000');
-    // Left as an nginx variable for the rendered configuration, not resolved here.
-    expect(env['API_PROXY_HOST']).toBe('$host');
+    // Never the browser's Host. A public edge builds its https redirect from
+    // whatever Host it is sent, and the browser's points back at the panel —
+    // which is a redirect loop rather than a failure.
+    expect(env['API_PROXY_HOST']).toBe('api:10000');
+  });
+
+  it('leaves the port out of Host when it is the scheme\'s own', () => {
+    const plain = sourceScript({ API_UPSTREAM: 'http://api.example.com', RESOLV_CONF: resolv() });
+    expect(plain['API_PROXY_ADDR']).toBe('api.example.com:80');
+    expect(plain['API_PROXY_HOST']).toBe('api.example.com');
+
+    const secure = sourceScript({ API_UPSTREAM: 'https://api.example.com:8443', RESOLV_CONF: resolv() });
+    expect(secure['API_PROXY_HOST']).toBe('api.example.com:8443');
   });
 
   it('takes an https URL, defaults the port, and asks for that Host', () => {
@@ -128,6 +139,31 @@ describe('the image and the template agree', () => {
   it('ships the script executable, or the entrypoint skips it', () => {
     const mode = execFileSync('git', ['ls-files', '-s', SCRIPT], { encoding: 'utf8' }).split(' ')[0];
     expect(mode).toBe('100755');
+  });
+
+
+  it('never asks the upstream for the browser\'s Host', () => {
+    const template = readFileSync(TEMPLATE, 'utf8');
+    const host = /proxy_set_header\s+Host\s+(\S+);/.exec(template)?.[1];
+    // This exact line looped a live deployment: a public upstream reached over
+    // plaintext answered `301 https://<the Host it was sent>`, which was the
+    // panel, which proxied again.
+    expect(host).toBe('${API_PROXY_HOST}');
+    expect(template).toMatch(/proxy_set_header\s+X-Forwarded-Host\s+\$host;/);
+  });
+
+  it('answers an upstream redirect rather than passing it on', () => {
+    const template = readFileSync(TEMPLATE, 'utf8');
+    expect(template).toMatch(/proxy_intercept_errors on;/);
+    expect(template).toMatch(/error_page 301 302 303 307 308 = @api_redirected;/);
+    // In the service's own error shape, so the panel renders the reason.
+    expect(template).toMatch(/location @api_redirected \{[\s\S]*upstream_redirected/);
+  });
+
+  it('forwards the scheme the browser used, not the one this container saw', () => {
+    const template = readFileSync(TEMPLATE, 'utf8');
+    expect(template).toMatch(/map \$http_x_forwarded_proto \$forwarded_proto/);
+    expect(template).toMatch(/proxy_set_header\s+X-Forwarded-Proto\s+\$forwarded_proto;/);
   });
 
   it('substitutes only values the script exports or the image sets', () => {

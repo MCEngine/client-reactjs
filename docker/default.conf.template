@@ -16,6 +16,15 @@ resolver ${DNS_RESOLVER} valid=10s ipv6=off;
 # than as a mistake anyone can act on.
 resolver_timeout 5s;
 
+# What the *browser* connected with, not what reached this container. nginx here
+# listens on plain HTTP behind whatever terminates TLS in front of it, so $scheme
+# is http even when the person is on https -- and forwarding that tells the API
+# the session is insecure when it is not.
+map $http_x_forwarded_proto $forwarded_proto {
+    default    $scheme;
+    "~^https?$" $http_x_forwarded_proto;
+}
+
 server {
     listen       8080;
     server_name  _;
@@ -82,7 +91,7 @@ server {
         proxy_set_header X-Forwarded-Host  $host;
         proxy_set_header X-Real-IP         $remote_addr;
         proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Proto $forwarded_proto;
 
         # Only consulted when the upstream is https, and then all four matter:
         # without SNI a shared front end cannot pick the certificate, and
@@ -94,6 +103,15 @@ server {
         proxy_ssl_verify_depth      3;
         proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
 
+        # The API issues no redirects, so one came from something in front of it
+        # -- and the usual cause is API_UPSTREAM naming a public host over
+        # plaintext, whose edge answers `301 https://<the Host it was sent>`.
+        # Passing that to the browser sends it off-origin, where the HttpOnly
+        # refresh cookie will not go; it used to send the browser back here,
+        # which is a loop it can only give up on. Answer with the reason instead.
+        proxy_intercept_errors on;
+        error_page 301 302 303 307 308 = @api_redirected;
+
         # A jar upload is a large streamed body and a download is a large
         # streamed response. Buffering either to disk first adds a copy and a
         # delay for no benefit, and the service caps the upload size itself
@@ -103,6 +121,14 @@ server {
         proxy_request_buffering off;
         proxy_buffering         off;
         proxy_read_timeout      300s;
+    }
+
+    # Shaped like the service's own error envelope, so the panel renders the
+    # message through the same path as any other failure rather than showing a
+    # person a bare 502.
+    location @api_redirected {
+        default_type application/json;
+        return 502 '{"error":{"code":"upstream_redirected","message":"The API redirected the panel\u0027s proxy. API_UPSTREAM is probably a public address reached over plaintext -- write https:// in front of it, or use the private host:port."}}';
     }
 
     # React Router owns every other path, so an unknown one is the app's to
