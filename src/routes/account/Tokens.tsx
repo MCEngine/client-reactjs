@@ -22,36 +22,51 @@ export function Tokens() {
   const [minted, setMinted] = useState<string | undefined>(undefined);
 
   return (
-    <main>
+    <main className="container">
+      <p className="eyebrow">Machines</p>
       <h1>API tokens</h1>
-      <p>
+      <p className="lead">
         A token authenticates a machine — a Minecraft server, or a CI job. It is shown once,
         here, and never again: the server stores only a digest of it.
       </p>
 
       {minted !== undefined && (
-        <section aria-labelledby="minted-heading">
+        <section className="panel" aria-labelledby="minted-heading">
           <h2 id="minted-heading">Your new token</h2>
           <p role="status">Copy it now. This is the only time it is shown.</p>
-          <code>{minted}</code>
-          <button type="button" onClick={() => setMinted(undefined)}>
-            I have copied it
-          </button>
+          <p className="secret">{minted}</p>
+          <div className="btn-row">
+            <button className="btn" type="button" onClick={() => setMinted(undefined)}>
+              I have copied it
+            </button>
+          </div>
         </section>
       )}
 
-      <AsyncBoundary state={state} isEmpty={(p) => p.data.length === 0} empty={<p>No tokens yet.</p>}>
+      <AsyncBoundary
+        state={state}
+        isEmpty={(p) => p.data.length === 0}
+        empty={<p className="muted">No tokens yet.</p>}
+      >
         {(page) => (
-          <ul>
+          <ul className="stack">
             {page.data.map((token) => (
               <li key={token.id}>
-                <strong>{token.name}</strong> <code>{token.prefix}…</code>
-                <div>{token.scopes.join(', ')}</div>
-                <div>
+                <div className="row-between">
+                  <strong>{token.name}</strong> <code>{token.prefix}…</code>
+                </div>
+                <ul className="chip-row">
+                  {token.scopes.map((scope) => (
+                    <li className="chip" key={scope}>
+                      {scope}
+                    </li>
+                  ))}
+                </ul>
+                <p className="muted">
                   {token.last_used_at === undefined
                     ? 'Never used'
                     : `Last used ${new Date(token.last_used_at).toLocaleString()}`}
-                </div>
+                </p>
                 <ConfirmButton
                   label="Revoke"
                   confirmLabel="Revoke"
@@ -67,6 +82,7 @@ export function Tokens() {
         )}
       </AsyncBoundary>
 
+      <section className="panel">
       <h2>Create a token</h2>
       <Form
         submitLabel="Create token"
@@ -82,10 +98,10 @@ export function Tokens() {
         }}
       >
         <Field label="Name" value={name} onChange={setName} required />
-        <fieldset>
+        <fieldset className="field">
           <legend>Scopes</legend>
           {SCOPES.map((scope) => (
-            <p key={scope.id}>
+            <p className="field" key={scope.id}>
               <label>
                 <input
                   type="checkbox"
@@ -104,6 +120,7 @@ export function Tokens() {
           ))}
         </fieldset>
       </Form>
+      </section>
     </main>
   );
 }

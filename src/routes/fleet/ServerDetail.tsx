@@ -18,20 +18,26 @@ export function ServerDetail() {
   if (id === undefined) return <NotFound />;
 
   return (
-    <main>
+    <main className="container">
       <AsyncBoundary state={state}>
         {(server) => (
           <>
-            <h1>{server.name}</h1>
-            <p>
-              {server.platform ?? 'Unknown platform'} {server.mc_version ?? ''} — agent{' '}
-              {server.agent_version ?? 'unknown'}
-            </p>
+            <div className="hero">
+              <p className="eyebrow">Server</p>
+              <h1>{server.name}</h1>
+              <p className="lead">
+                {server.platform ?? 'Unknown platform'} {server.mc_version ?? ''} — agent{' '}
+                {server.agent_version ?? 'unknown'}
+              </p>
+            </div>
 
             <h2>Installed plugins</h2>
             {server.plugins.length === 0 ? (
-              <p>This server has not reported an inventory yet.</p>
+              <p className="muted">This server has not reported an inventory yet.</p>
             ) : (
+              /* Wrapped, so a wide table scrolls inside its own box rather than
+                 making the page scroll sideways. */
+              <div className="table-wrap">
               <table>
                 <thead>
                   <tr>
@@ -49,9 +55,15 @@ export function ServerDetail() {
                       <td>{plugin.installed_version ?? '—'}</td>
                       <td>{plugin.desired_version ?? '—'}</td>
                       <td>
-                        {plugin.state}
-                        {plugin.drifted && <span> (drifted)</span>}
-                        {plugin.last_error !== undefined && <div role="alert">{plugin.last_error}</div>}
+                        <span className="chip-row">
+                          <span className="badge">{plugin.state}</span>
+                          {plugin.drifted && <span className="badge badge--warn">drifted</span>}
+                        </span>
+                        {plugin.last_error !== undefined && (
+                          <p className="muted" role="alert">
+                            {plugin.last_error}
+                          </p>
+                        )}
                       </td>
                       <td>
                         <ConfirmButton
@@ -71,6 +83,7 @@ export function ServerDetail() {
                   ))}
                 </tbody>
               </table>
+              </div>
             )}
           </>
         )}

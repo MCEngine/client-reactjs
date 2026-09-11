@@ -37,53 +37,71 @@ export function ConfirmButton({
 
   if (!open) {
     return (
-      <button type="button" onClick={() => setOpen(true)} disabled={disabled}>
+      <button
+        className="btn btn--danger"
+        type="button"
+        onClick={() => setOpen(true)}
+        disabled={disabled}
+      >
         {label}
       </button>
     );
   }
 
   return (
-    <div role="group" aria-label={label}>
-      <p>{description}</p>
+    <div className="callout callout--danger" role="group" aria-label={label}>
+      <span className="callout__icon" aria-hidden="true">
+        !
+      </span>
+      <div className="callout__body">
+        <p>{description}</p>
 
-      {confirmationPhrase !== undefined && (
-        <label>
-          Type <code>{confirmationPhrase}</code> to confirm
-          <input
-            value={typed}
-            onChange={(event) => setTyped(event.target.value)}
-            aria-label={`Type ${confirmationPhrase} to confirm`}
-            autoComplete="off"
-          />
-        </label>
-      )}
+        {confirmationPhrase !== undefined && (
+          <p className="field">
+            <label>
+              Type <code>{confirmationPhrase}</code> to confirm
+              <input
+                value={typed}
+                onChange={(event) => setTyped(event.target.value)}
+                aria-label={`Type ${confirmationPhrase} to confirm`}
+                autoComplete="off"
+              />
+            </label>
+          </p>
+        )}
 
-      <button
-        type="button"
-        onClick={() => {
-          setOpen(false);
-          setTyped('');
-        }}
-        disabled={busy}
-      >
-        Cancel
-      </button>
+        <div className="btn-row">
+          {/* Cancel comes first, and is the plainer of the two. The dangerous
+              button should never be the one a hurried click lands on. */}
+          <button
+            className="btn"
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              setTyped('');
+            }}
+            disabled={busy}
+          >
+            Cancel
+          </button>
 
-      <button
-        type="button"
-        onClick={() => {
-          setBusy(true);
-          void Promise.resolve(onConfirm()).finally(() => {
-            setBusy(false);
-            setOpen(false);
-            setTyped('');
-          });
-        }}
-        disabled={!ready || busy}
-      >
-        {busy ? 'Working…' : confirmLabel}
-      </button>
+          <button
+            className="btn btn--sponsor"
+            type="button"
+            onClick={() => {
+              setBusy(true);
+              void Promise.resolve(onConfirm()).finally(() => {
+                setBusy(false);
+                setOpen(false);
+                setTyped('');
+              });
+            }}
+            disabled={!ready || busy}
+          >
+            {busy ? 'Working…' : confirmLabel}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

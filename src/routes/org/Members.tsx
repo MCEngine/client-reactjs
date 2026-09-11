@@ -27,10 +27,11 @@ export function Members() {
   if (handle === undefined) return <NotFound />;
 
   return (
-    <main>
+    <main className="container">
+      <p className="eyebrow">Organization</p>
       <h1>{handle}</h1>
 
-      <section aria-labelledby="usage-heading">
+      <section className="panel" aria-labelledby="usage-heading">
         <h2 id="usage-heading">Storage</h2>
         <AsyncBoundary state={settings}>
           {(value) => (
@@ -43,19 +44,23 @@ export function Members() {
         </AsyncBoundary>
       </section>
 
-      <section aria-labelledby="members-heading">
+      <section className="panel" aria-labelledby="members-heading">
         <h2 id="members-heading">Members</h2>
         <AsyncBoundary state={members}>
           {(page) => (
-            <ul>
+            <ul className="stack">
               {page.data.map((member) => (
                 <li key={member.user.id}>
-                  <strong>{member.user.display_name}</strong> <code>{member.user.handle}</code>
-                  <span> — {member.role}</span>
+                  <div className="row-between">
+                    <span>
+                      <strong>{member.user.display_name}</strong> <code>{member.user.handle}</code>
+                    </span>
+                    <span className="badge badge--accent">{member.role}</span>
+                  </div>
 
                   {member.role !== 'owner' && (
-                    <>
-                      <label>
+                    <div className="btn-row">
+                      <label className="field">
                         Role
                         <select
                           value={member.role}
@@ -87,11 +92,13 @@ export function Members() {
                           members.reload();
                         }}
                       />
-                    </>
+                    </div>
                   )}
 
                   {member.role === 'owner' && (
-                    <span> (the owner cannot be removed or demoted — transfer instead)</span>
+                    <p className="muted">
+                      The owner cannot be removed or demoted — transfer instead.
+                    </p>
                   )}
                 </li>
               ))}
@@ -113,7 +120,7 @@ export function Members() {
           }}
         >
           <Field label="Their handle" value={invite} onChange={(v) => setInvite(v.toLowerCase())} required />
-          <p>
+          <p className="field">
             <label>
               Role
               <select value={role} onChange={(e) => setRole(e.target.value as (typeof ROLES)[number])}>
@@ -125,7 +132,7 @@ export function Members() {
               </select>
             </label>
           </p>
-          <small>
+          <small className="field__hint">
             Owner is not offered: an organization has exactly one, and it moves by transfer.
           </small>
         </Form>

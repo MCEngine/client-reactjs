@@ -1,0 +1,555 @@
+/*
+ * Silver Glass — layer 3 of 3: the component vocabulary.
+ *
+ * Compose a page out of these. Add to this file only when something genuinely
+ * cannot be composed; add a hex value to it never.
+ */
+
+/* ------------------------------------------------------- glass surfaces */
+
+.panel,
+.hero,
+.card {
+  background: var(--glass);
+  -webkit-backdrop-filter: var(--blur);
+  backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius);
+}
+
+.panel {
+  padding: 1.5rem;
+  margin: 0 0 1.5rem;
+}
+
+.panel > :last-child {
+  margin-bottom: 0;
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 2.25rem 1.75rem;
+  margin: 0 0 1.75rem;
+  border-radius: var(--radius-lg);
+}
+
+/* The soft glow that separates a hero from an ordinary panel. */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: -40% -10% auto;
+  height: 70%;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.85), transparent);
+  pointer-events: none;
+}
+
+.hero > * {
+  position: relative;
+}
+
+.section {
+  margin: 0 0 2rem;
+}
+
+/* ---------------------------------------------------------- type helpers */
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--ink-400);
+  margin: 0 0 0.35rem;
+}
+
+.lead {
+  font-size: 1.05rem;
+  color: var(--ink-500);
+  margin: 0 0 1.25rem;
+}
+
+.muted {
+  color: var(--ink-400);
+}
+
+/* ---------------------------------------------------------------- cards */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));
+  gap: 1rem;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+ * A card grid is often built from a <ul>, because the items are a list. The
+ * <li> then sits between the grid and the card and would take the grid cell
+ * itself; `display: contents` hands the cell to the card and keeps the list
+ * semantics a screen reader announces.
+ */
+.card-grid > li {
+  display: contents;
+}
+
+.card {
+  padding: 1.1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/* Only a card that is itself a link lifts — a lift on a static card promises
+   an interaction that is not there. */
+a.card {
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+a.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card__title {
+  font-weight: 650;
+  color: var(--ink-900);
+  margin: 0;
+  font-size: 1.02rem;
+}
+
+.card__desc {
+  color: var(--ink-500);
+  font-size: 0.94rem;
+  margin: 0;
+}
+
+.card__more {
+  margin-top: auto;
+  padding-top: 0.5rem;
+  color: var(--accent-strong);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* --------------------------------------------------------- feature list */
+
+.feature-list {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.feature-list > li {
+  background: var(--glass-faint);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  padding: 0.9rem 1.1rem;
+}
+
+/* ------------------------------------------------------ definition list */
+
+.deflist {
+  margin: 0 0 1.25rem;
+  display: grid;
+  gap: 0;
+}
+
+.deflist__row {
+  display: grid;
+  grid-template-columns: minmax(9rem, 22%) 1fr;
+  gap: 0.5rem 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.deflist__row:last-child {
+  border-bottom: 0;
+}
+
+.deflist__term {
+  font-weight: 600;
+  color: var(--ink-900);
+  margin: 0;
+}
+
+.deflist__row > dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 560px) {
+  .deflist__row {
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+  }
+}
+
+/* --------------------------------------------------------------- tables */
+
+/*
+ * Always wrap a table in this. The page body must never scroll horizontally;
+ * a wide table scrolls inside its own box instead.
+ */
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  background: var(--glass-faint);
+  margin: 0 0 1.25rem;
+}
+
+.table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.94rem;
+}
+
+.table-wrap th,
+.table-wrap td {
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--hairline);
+  vertical-align: top;
+}
+
+.table-wrap thead th {
+  background: var(--glass-strong);
+  color: var(--ink-900);
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.table-wrap tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* -------------------------------------------------------- badges & chips */
+
+.badge {
+  display: inline-block;
+  padding: 0.14rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 650;
+  line-height: 1.5;
+  background: var(--silver-200);
+  color: var(--ink-700);
+  border: 1px solid var(--hairline);
+}
+
+.badge--accent {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  border-color: transparent;
+}
+
+.badge--ok {
+  background: var(--ok-soft);
+  color: var(--ok);
+  border-color: transparent;
+}
+
+.badge--warn {
+  background: var(--warn-soft);
+  color: var(--warn);
+  border-color: transparent;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  background: var(--glass-strong);
+  border: 1px solid var(--hairline);
+  color: var(--ink-700);
+}
+
+/* -------------------------------------------------------------- buttons */
+
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1.05rem;
+  border-radius: 999px;
+  border: 1px solid var(--hairline);
+  background: var(--glass-strong);
+  color: var(--ink-900);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn--primary {
+  background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+  border-color: transparent;
+  color: var(--white);
+}
+
+.btn--sponsor {
+  background: linear-gradient(180deg, var(--sponsor), #b02a58);
+  border-color: transparent;
+  color: var(--white);
+}
+
+/* A destructive action reads as one before it is clicked, not after. */
+.btn--danger {
+  background: var(--sponsor-soft);
+  border-color: var(--sponsor);
+  color: var(--sponsor);
+}
+
+.btn--quiet {
+  background: transparent;
+  box-shadow: none;
+  border-color: transparent;
+  color: var(--ink-500);
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  margin: 0 0 1rem;
+}
+
+.btn-row > :last-child {
+  margin-bottom: 0;
+}
+
+/* ------------------------------------------------------------- callouts */
+
+.callout {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--hairline);
+  background: var(--glass-faint);
+  margin: 0 0 1rem;
+  color: var(--ink-700);
+}
+
+.callout__icon {
+  flex: none;
+  font-weight: 700;
+  color: var(--ink-400);
+}
+
+.callout__body {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.callout--info {
+  background: var(--accent-soft);
+  border-color: transparent;
+}
+
+.callout--info .callout__icon {
+  color: var(--accent-strong);
+}
+
+.callout--ok {
+  background: var(--ok-soft);
+  border-color: transparent;
+}
+
+.callout--ok .callout__icon {
+  color: var(--ok);
+}
+
+.callout--warn {
+  background: var(--warn-soft);
+  border-color: transparent;
+}
+
+.callout--warn .callout__icon {
+  color: var(--warn);
+}
+
+.callout--danger {
+  background: var(--sponsor-soft);
+  border-color: transparent;
+}
+
+.callout--danger .callout__icon {
+  color: var(--sponsor);
+}
+
+/* ------------------------------------------------------------ accordion */
+
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0 0 1.5rem;
+}
+
+/* Native <details>, so it works with no JavaScript and is keyboard-operable
+   for free. */
+details.acc {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+details.acc > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 0.8rem 1rem;
+  font-weight: 600;
+  color: var(--ink-900);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+details.acc > summary::-webkit-details-marker {
+  display: none;
+}
+
+details.acc > summary::before {
+  content: '+';
+  color: var(--accent-strong);
+  font-weight: 700;
+  width: 1ch;
+}
+
+details.acc[open] > summary::before {
+  content: '\2013';
+}
+
+.acc__body {
+  padding: 0 1rem 1rem;
+}
+
+.acc__body > :last-child {
+  margin-bottom: 0;
+}
+
+/* ------------------------------------------------------- forms & status */
+
+.field {
+  margin: 0 0 1rem;
+}
+
+.field__hint {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--ink-500);
+  font-size: 0.85rem;
+}
+
+.form__actions {
+  margin-top: 1.25rem;
+}
+
+/* Loading is a status line, not a spinner: it is announced, and it does not
+   move. */
+.async-status {
+  color: var(--ink-400);
+  font-style: italic;
+  margin: 0 0 1rem;
+}
+
+.code-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--ink-400);
+  margin: 0 0 0.3rem;
+}
+
+/*
+ * A long monospace value that is *not* a secret — a checksum, an id. Neutral on
+ * purpose: the dashed sponsor border below means "this is shown once and then
+ * gone", and putting it on a public checksum would say the opposite of the
+ * truth.
+ */
+.mono-block {
+  font-family: var(--mono);
+  font-size: 0.86rem;
+  background: var(--glass-faint);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.75rem;
+  margin: 0 0 0.75rem;
+  color: var(--ink-700);
+  overflow-wrap: anywhere;
+}
+
+/* A secret shown once gets a surface that says so. */
+.secret {
+  font-family: var(--mono);
+  font-size: 0.86rem;
+  background: var(--surface-solid);
+  border: 1px dashed var(--sponsor);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 0.85rem;
+  margin: 0 0 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+/* A plain list of records, when a card grid would overstate them. */
+.stack {
+  list-style: none;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.stack > li {
+  background: var(--glass-faint);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  padding: 0.9rem 1.1rem;
+}
+
+.stack > li > :last-child {
+  margin-bottom: 0;
+}
+
+.row-between {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+}

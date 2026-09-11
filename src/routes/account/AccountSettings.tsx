@@ -11,15 +11,18 @@ export function AccountSettings() {
 
   if (account === undefined) {
     return (
-      <main>
+      <main className="container">
         <h1>Account</h1>
-        <p role="status">Checking your session…</p>
+        <p className="async-status" role="status">
+          Checking your session…
+        </p>
       </main>
     );
   }
 
   return (
-    <main>
+    <main className="container">
+      <p className="eyebrow">You</p>
       <h1>Account settings</h1>
       <Profile account={account} onSaved={refreshAccount} />
       <HandleSection account={account} onSaved={refreshAccount} />
@@ -32,7 +35,7 @@ export function AccountSettings() {
     const [bio, setBio] = useState(current.bio ?? '');
 
     return (
-      <section aria-labelledby="profile-heading">
+      <section className="panel" aria-labelledby="profile-heading">
         <h2 id="profile-heading">Profile</h2>
         <Form
           submitLabel="Save profile"
@@ -57,9 +60,9 @@ export function AccountSettings() {
     const [error, setError] = useState<unknown>(undefined);
 
     return (
-      <section aria-labelledby="handle-heading">
+      <section className="panel" aria-labelledby="handle-heading">
         <h2 id="handle-heading">Handle</h2>
-        <p>
+        <p className="muted">
           Changing your handle releases the old one and locks the new one for thirty days.
           Links to the old handle stop working.
         </p>
@@ -99,19 +102,25 @@ export function AccountSettings() {
     const [adding, setAdding] = useState('');
 
     return (
-      <section aria-labelledby="emails-heading">
+      <section className="panel" aria-labelledby="emails-heading">
         <h2 id="emails-heading">Email addresses</h2>
         <AsyncBoundary state={state}>
           {(page) => (
-            <ul>
+            <ul className="stack">
               {page.data.map((email) => (
                 <li key={email.id}>
-                  {email.email}
-                  {email.is_primary && <span> (primary)</span>}
-                  {!email.verified && <span> (unverified)</span>}
+                  <div className="row-between">
+                    <span>{email.email}</span>
+                    <span className="chip-row">
+                      {email.is_primary && <span className="badge badge--ok">primary</span>}
+                      {!email.verified && <span className="badge badge--warn">unverified</span>}
+                    </span>
+                  </div>
 
+                  <div className="btn-row">
                   {!email.is_primary && (
                     <button
+                      className="btn"
                       type="button"
                       // The server refuses an unverified address as primary;
                       // this disables the control and says why, rather than
@@ -140,6 +149,7 @@ export function AccountSettings() {
                       }}
                     />
                   )}
+                  </div>
                 </li>
               ))}
             </ul>

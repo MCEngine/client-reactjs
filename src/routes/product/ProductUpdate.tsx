@@ -35,17 +35,26 @@ export function ProductUpdate() {
   if (productId === undefined) return <NotFound />;
 
   return (
-    <main>
+    <main className="container">
       <h1>Publish a version</h1>
 
       <AsyncBoundary state={product}>
         {(value) => (
           <>
-            <p>
-              <Link to={`/product/${value.slug}/settings`}>Back to settings</Link>
-            </p>
+            <nav className="breadcrumbs" aria-label="Breadcrumb">
+              <Link to="/">Products</Link>
+              <span className="sep" aria-hidden="true">
+                /
+              </span>
+              <Link to={`/product/${value.slug}`}>{value.name}</Link>
+              <span className="sep" aria-hidden="true">
+                /
+              </span>
+              <Link to={`/product/${value.slug}/settings`}>Settings</Link>
+            </nav>
             <Limits orgId={value.owner_org_id} />
 
+            <div className="panel">
             <Form
               submitLabel="Publish"
               successMessage="Published."
@@ -95,7 +104,7 @@ export function ProductUpdate() {
                 hint="Like 1.2.3, optionally with a -beta.1 suffix. Compared numerically, so 1.10.0 is newer than 1.9.0."
               />
 
-              <p>
+              <p className="field">
                 <label>
                   Channel
                   <select
@@ -109,7 +118,7 @@ export function ProductUpdate() {
                 </label>
               </p>
 
-              <p>
+              <p className="field">
                 <label>
                   Jar
                   {/*
@@ -126,21 +135,25 @@ export function ProductUpdate() {
                     onChange={(event) => setFile(event.target.files?.[0])}
                   />
                 </label>
-                <small>
+                <small className="field__hint">
                   One jar per version. If your project ships two, publish them as two products.
                 </small>
               </p>
 
-              <p>
+              <p className="field">
                 <label>
                   Changelog
-                  <textarea value={changelog} onChange={(e) => setChangelog(e.target.value)} />
+                  <textarea
+                    rows={5}
+                    value={changelog}
+                    onChange={(e) => setChangelog(e.target.value)}
+                  />
                 </label>
               </p>
 
-              <fieldset>
+              <fieldset className="field">
                 <legend>Compatibility</legend>
-                <p>
+                <p className="field">
                   <label>
                     Platform
                     <select
@@ -163,6 +176,7 @@ export function ProductUpdate() {
                 />
               </fieldset>
             </Form>
+            </div>
           </>
         )}
       </AsyncBoundary>
@@ -181,10 +195,15 @@ export function ProductUpdate() {
     const remaining = settings.value.storage_quota_bytes - settings.value.storage_used_bytes;
 
     return (
-      <p>
-        {formatBytes(remaining)} of quota left. Largest single file:{' '}
-        {formatBytes(settings.value.max_file_bytes)}.
-      </p>
+      <div className="callout callout--info">
+        <span className="callout__icon" aria-hidden="true">
+          i
+        </span>
+        <p className="callout__body">
+          {formatBytes(remaining)} of quota left. Largest single file:{' '}
+          {formatBytes(settings.value.max_file_bytes)}.
+        </p>
+      </div>
     );
   }
 }

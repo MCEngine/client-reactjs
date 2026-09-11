@@ -68,3 +68,51 @@ semantic and unstyled on purpose so the look is applied to every page at once. T
 they were deferring to, which is why task 3 touches every route rather than a few.
 
 Next task depends on: nothing beyond this record.
+
+### Task 3 — feat/panel-design
+
+Three stylesheets, a rebuilt shell, five restyled shared components, and every route composed
+from the system's vocabulary. No new dependency: three runtime dependencies before, three after.
+
+**`src/styles/{main,layout,components}.css`, imported in that order from `main.tsx`** — the
+layering §7 describes, expressed the way a single entry point allows. `main.css` is the only
+file in the repository containing a hex value, which is what keeps a rebrand to one file; a
+sweep for `#rrggbb` outside `src/styles/` comes back empty, and so does one for inline `style=`.
+
+**The shell became the design's chrome without the design's runtime.** `App.tsx` renders
+`.site-header` > `.nav`, a `.nav__toggle` that is a real `<button>` with `aria-expanded` and
+`aria-controls`, `NavLink` supplying `.is-active`, and a `.site-footer`. §6's `partials/`,
+`js/site.js` and `{{ROOT}}` are not here and are not wanted.
+
+**Four corrections the work itself forced:**
+
+* **The card link's accessible name regressed and the tests caught it.** Making the whole card
+  the link meant its name became the title, the summary and the "View →" affordance run
+  together — which is what a screen reader reads out. Fixed in the component with an explicit
+  `aria-label`, not by loosening the test, and a new assertion (`toHaveAccessibleName`) holds it
+  exactly.
+* **The checksum was rendered on the `.secret` surface**, whose dashed sponsor border means
+  "shown once and then gone". A checksum is public — the opposite. Added `.mono-block`, neutral,
+  for a long monospace value that is not a secret.
+* **`display: contents` was inline on three `<li>` elements.** It belongs in the stylesheet, and
+  now is, with the reason: the `<li>` between a grid and a card would otherwise take the grid
+  cell.
+* Two `<main>` elements in `AccountSettings` needed the container class, not one — the loading
+  branch is a page too.
+
+**The overlay rule was implemented and then checked, not just implemented.** The mobile menu is
+nested inside a header that has `backdrop-filter`; a child with its own blur can have its
+background paint suppressed where the property is unsupported, letting the page bleed through.
+Computed style in a real browser: `rgba(255, 255, 255, 0.98)` with `backdrop-filter: none`.
+
+Verified in Chromium against the built bundle, not just compiled:
+
+* `npm run check` green — 50 tests across five suites, one new.
+* `npm run build` — 302.81 kB JS (92.72 kB gzipped) and 13.03 kB CSS (3.50 kB gzipped).
+* Four pages rendered and screenshotted at 1280px and at 390px: the catalogue, a product page, a
+  sign-in form, and the mobile menu open over content.
+* **`documentElement.scrollWidth > innerWidth` is `false` on every page at both widths** — §5
+  states the body must never scroll horizontally, so it is asserted rather than assumed.
+
+Next task depends on: nothing. The release is last.
+

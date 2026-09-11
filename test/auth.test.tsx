@@ -120,7 +120,15 @@ describe('the product list', () => {
     );
 
     renderWithAuth(<App />, client);
-    expect(await screen.findByRole('link', { name: 'Acme Tools' })).toBeInTheDocument();
+
+    /*
+     * The whole card is the link, so without an explicit label its accessible
+     * name is the title, the summary and the "View →" affordance run together —
+     * which is what a screen reader reads out. `toHaveAccessibleName` is an
+     * exact match, so this test fails the moment that regresses.
+     */
+    const link = await screen.findByRole('link', { name: 'Acme Tools' });
+    expect(link).toHaveAccessibleName('Acme Tools');
     expect(screen.getByText('Tools for servers.')).toBeInTheDocument();
   });
 

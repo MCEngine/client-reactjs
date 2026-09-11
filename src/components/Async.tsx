@@ -61,8 +61,21 @@ export interface AsyncBoundaryProps<T> {
 }
 
 export function AsyncBoundary<T>({ state, children, empty, isEmpty }: AsyncBoundaryProps<T>) {
-  if (state.status === 'loading') return <p role="status">Loading…</p>;
-  if (state.status === 'failed') return <p role="alert">{describeError(state.error)}</p>;
+  if (state.status === 'loading')
+    return (
+      <p className="async-status" role="status">
+        Loading…
+      </p>
+    );
+  if (state.status === 'failed')
+    return (
+      <div className="callout callout--danger" role="alert">
+        <span className="callout__icon" aria-hidden="true">
+          !
+        </span>
+        <p className="callout__body">{describeError(state.error)}</p>
+      </div>
+    );
   if (empty !== undefined && isEmpty?.(state.value) === true) return <>{empty}</>;
   return <>{children(state.value)}</>;
 }
