@@ -123,3 +123,15 @@ export interface IssuedSession {
   expires_in: number;
   token_type: 'Bearer';
 }
+
+/**
+ * What the deployment says about itself, before you have any credentials.
+ *
+ * `demo_account` is `null` unless the operator turned it on. When it is not
+ * null the password is real and deliberately public — see the server's
+ * `wiki/information/api-contract.md`.
+ */
+export interface Meta {
+  readonly demo_account: { readonly email: string; readonly password: string } | null;
+}
+
