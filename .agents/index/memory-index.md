@@ -30,6 +30,7 @@ protocol's approval gate. See `{shared}/rules/memory-policy.md`.
 | [`tasks/silver-glass.md`](../memory/tasks/silver-glass.md) | Adopting the Silver Glass design system: the four-task plan, and one entry per task. |
 | [`tasks/version-picker.md`](../memory/tasks/version-picker.md) | Replacing the product page’s full version list with a dropdown: the three-task plan, and one entry per task. |
 | [`tasks/demo-and-landing.md`](../memory/tasks/demo-and-landing.md) | This repository's entries in the landing-page and demo-account plan. The plan table itself lives in `MCEngine/server-expressjs`. |
+| [`tasks/same-origin-api.md`](../memory/tasks/same-origin-api.md) | Documenting `VITE_API_BASE_URL` and `API_UPSTREAM` after a cross-origin deployment broke: the confirmed five-task plan across two repositories. |
 
 ## Decisions
 
