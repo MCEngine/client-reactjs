@@ -45,3 +45,30 @@ One repository. No server change, no new page, no new dependency.
 ### Task 1 — chore/org-nav-plan
 
 This record and its row in `.agents/index/memory-index.md`. Nothing else.
+
+### Task 2 — feat/org-nav
+
+`src/App.tsx` gained one `NavLink` to `/org/new`, inside the signed-in block and after *Servers*.
+Named **New organization** rather than *Organizations*, because a link named for a list that
+lands on a form is a small lie — and because the landing page's accordion already says *Create an
+organization*, so the two accessible names stay distinct on the one page that carries both.
+
+`test/auth.test.tsx` gained two cases: signed in, the link is in the nav and **following it**
+renders the `Create an organization` heading, so the assertion covers the route and not just the
+href; signed out, the link is absent, since `/org/new` is behind `RequireAuth` and a link that
+answers with a sign-in page is worse than no link.
+
+Both passed on the first run, so the second was mutated to check it could fail: moving the link
+out of the signed-in block made *is absent while signed out* fail, and reverting restored it.
+
+Rendered in Chromium against the built bundle at both widths, since the desktop row now carries
+six links, a name and a button:
+
+| | 1280px | 390px |
+|---|---|---|
+| Horizontal overflow | none | none |
+| The link | visible, 147px wide | visible, 358px, inside the viewport |
+| Following it | `/org/new`, `h1` *Create an organization* | the same, and the menu closes |
+
+The mobile menu still computes to `rgba(255, 255, 255, 0.98)` with `backdrop-filter: none`,
+which is the overlay rule holding with one more item in it.

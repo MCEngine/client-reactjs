@@ -165,3 +165,43 @@ describe('the product list', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('Something went wrong.');
   });
 });
+
+describe('the organization entry in the nav', () => {
+  const signedIn = () =>
+    testClient(
+      stubFetch({
+        'POST /api/v1/auth/refresh': { body: { access_token: 'a', expires_in: 900, token_type: 'Bearer' } },
+        'GET /api/v1/me': { body: ALICE },
+      }),
+    );
+
+  it('opens the create page when signed in', async () => {
+    renderWithAuth(<App />, signedIn());
+    const nav = within(await screen.findByRole('navigation', { name: 'Main' }));
+
+    await userEvent.click(await nav.findByRole('link', { name: 'New organization' }));
+
+    // The link is only useful if the route behind it resolves, so this follows
+    // it rather than asserting the href.
+    expect(await screen.findByRole('heading', { level: 1, name: 'Create an organization' })).toBeInTheDocument();
+  });
+
+  it('is absent while signed out', async () => {
+    const client = testClient(
+      stubFetch({
+        'POST /api/v1/auth/refresh': {
+          status: 401,
+          body: { error: { code: 'no_refresh_token', message: 'none' } },
+        },
+      }),
+    );
+
+    renderWithAuth(<App />, client);
+    const nav = within(await screen.findByRole('navigation', { name: 'Main' }));
+    await nav.findByRole('link', { name: 'Sign in' });
+
+    // /org/new is behind RequireAuth: offering it to a signed-out person is a
+    // link that answers with a sign-in page, which is worse than no link.
+    expect(nav.queryByRole('link', { name: 'New organization' })).not.toBeInTheDocument();
+  });
+});

@@ -87,6 +87,17 @@ export function App() {
                 <NavLink className={navLink} to="/fleet" onClick={close}>
                   Servers
                 </NavLink>
+                {/*
+                  Named for the page it opens, not "Organizations". There is no
+                  list to open: no endpoint answers which organizations an
+                  account belongs to, so every other org page needs a handle
+                  already known. Signed-in only, because the route is behind
+                  RequireAuth and a link that bounces to sign-in is worse than
+                  no link.
+                */}
+                <NavLink className={navLink} to="/org/new" onClick={close}>
+                  New organization
+                </NavLink>
                 <NavLink className={navLink} to="/settings/tokens" onClick={close}>
                   Tokens
                 </NavLink>
