@@ -172,18 +172,19 @@ describe('the organization entry in the nav', () => {
       stubFetch({
         'POST /api/v1/auth/refresh': { body: { access_token: 'a', expires_in: 900, token_type: 'Bearer' } },
         'GET /api/v1/me': { body: ALICE },
+        'GET /api/v1/me/orgs': { body: { data: [], next_cursor: null } },
       }),
     );
 
-  it('opens the create page when signed in', async () => {
+  it('opens the organization page when signed in', async () => {
     renderWithAuth(<App />, signedIn());
     const nav = within(await screen.findByRole('navigation', { name: 'Main' }));
 
-    await userEvent.click(await nav.findByRole('link', { name: 'New organization' }));
+    await userEvent.click(await nav.findByRole('link', { name: 'Organization' }));
 
     // The link is only useful if the route behind it resolves, so this follows
     // it rather than asserting the href.
-    expect(await screen.findByRole('heading', { level: 1, name: 'Create an organization' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Organization' })).toBeInTheDocument();
   });
 
   it('is absent while signed out', async () => {
@@ -200,8 +201,8 @@ describe('the organization entry in the nav', () => {
     const nav = within(await screen.findByRole('navigation', { name: 'Main' }));
     await nav.findByRole('link', { name: 'Sign in' });
 
-    // /org/new is behind RequireAuth: offering it to a signed-out person is a
+    // /org is behind RequireAuth: offering it to a signed-out person is a
     // link that answers with a sign-in page, which is worse than no link.
-    expect(nav.queryByRole('link', { name: 'New organization' })).not.toBeInTheDocument();
+    expect(nav.queryByRole('link', { name: 'Organization' })).not.toBeInTheDocument();
   });
 });
