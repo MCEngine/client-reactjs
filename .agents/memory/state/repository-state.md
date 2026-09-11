@@ -27,10 +27,11 @@ Plus the account, organization and fleet pages: `src/routes/account/`, `src/rout
 
 Plus the four `/product/*` pages: `src/routes/product/`.
 
-**The nav reaches every page a signed-in person needs except an organization list, which cannot
-exist yet.** *New organization* sits between *Servers* and *Tokens*; a list of the organizations
-an account belongs to needs an endpoint the contract does not have, and is the obvious next
-server-side step if organizations are to be browsable.
+**Organizations are administrable from the panel.** *Organization* in the nav opens `/org`, which
+lists what you belong to — `GET /me/orgs`, added for this — and creates one. Each has a settings
+landing at `/org/:handle/settings` and a page per subject under `/org/:handle/setting/`, mirroring
+how a product is administered. Token management is one component, `TokenManager`, used by both the
+personal page and an organization's.
 
 **Ships as a container.** `Dockerfile` builds the bundle with Node and serves it from
 `nginxinc/nginx-unprivileged` on port 8080, with `docker/default.conf.template` proxying `/api`

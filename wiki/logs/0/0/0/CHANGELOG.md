@@ -113,4 +113,16 @@ one that asks.
   page it opens rather than *Organizations*, because no endpoint lists an account's
   organizations — every other org route needs a handle already known — so there is no list to
   open. Signed-out visitors do not see it: the route is behind `RequireAuth`.
+- **An Organization page.** The nav entry is now *Organization* and opens `/org`, which lists the
+  organizations you belong to with the role you hold in each, and carries the create form beneath
+  them. `/org/new` redirects there, since the landing page published that address.
+- **A settings page per subject.** `/org/:handle/settings` is the landing — what the organization
+  is, its storage against its quota, and one card per subject — with
+  `/org/:handle/setting/general` (display name, description, handle and its thirty-day cooldown),
+  `/org/:handle/setting/member` (the members page, moved) and `/org/:handle/setting/token`
+  (credentials the organization owns). The same shape a product's settings already use.
+  `/org/:handle/members` redirects to the member page.
+- `src/components/TokenManager.tsx` — the personal token page and an organization's differ only
+  in the collection they read, so the list, the mint form, the scopes and the shown-once rule are
+  one component.
 
