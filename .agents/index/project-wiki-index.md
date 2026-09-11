@@ -18,3 +18,10 @@ are plain markdown with no frontmatter. This index never writes into `.agents/`.
 | File | Purpose |
 |---|---|
 | [`information/overview.md`](../../wiki/information/overview.md) | What this panel is, the service it renders, and the routes it will expose. |
+
+## Environments
+
+| File | Purpose |
+|---|---|
+| [`environments/setup.md`](../../wiki/environments/setup.md) | Requirements, the commands, why `/api` is proxied rather than pointed at another port, and how the tests stub the transport. |
+| [`environments/env.md`](../../wiki/environments/env.md) | Every environment variable, and why none of them may be secret. |

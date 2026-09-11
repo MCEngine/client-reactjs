@@ -49,3 +49,49 @@ what may be written rather than describing what exists.
 
 Next task depends on: the server's API contract, documented in `MCEngine/server-expressjs`
 before either client is written.
+
+### Task 15 — build/react-skeleton
+
+The build, the transport, the auth context and the shell — no pages beyond a product list and
+a not-found route.
+
+**Three runtime dependencies: React, React DOM and the router.** No state library, no
+data-fetching library, no component library. The panel holds no state of its own, so there is
+nothing for a state library to hold; a twelve-line `useAsync` covers what a read needs,
+including discarding a late response from a superseded request.
+
+**The access token lives in memory and nowhere else, and there is a test asserting
+`localStorage` stays empty.** A token in `localStorage` is readable by any script that ends
+up on the page and outlives the tab. The refresh token is an HttpOnly cookie the panel cannot
+read at all, which is exactly what lets a reload recover a session without the panel ever
+having stored a credential.
+
+**Two clients, not one.** The main one refreshes on a 401 and retries once; the second has no
+refresh hook and exists only to call refresh itself, because otherwise a failing refresh
+would try to refresh and recurse.
+
+**Three bugs the tests caught, all of them real:**
+
+* `AuthProvider` built a *real* client for the refresh call even when a test injected one, so
+  that one request went past the stub to the network. An injected client is the whole
+  transport, and now it is used for both. The symptom was a session that never recovered.
+* `AsyncBoundary` decided emptiness with `Array.isArray`, which is never true for a
+  `Page<T>`, so the empty state could not render. Emptiness is now the caller's to decide,
+  because what "empty" means depends on the shape.
+* `signOut` used `try/finally`, so it cleared local state and then rethrew — leaving an
+  unhandled rejection behind every sign-out click that happened while the server was
+  unhappy. It now never rejects: the person clicked sign out, and there is no recovery a
+  caller could perform with the error.
+
+**`/api` is proxied in development rather than pointed at port 3000.** Talking to another
+port would make every request cross-site in development and same-site in production, and the
+difference shows up only as a refresh cookie the browser silently declines to send.
+
+**No styling at all.** The markup is semantic and unstyled, so the look is applied to every
+page at once at the end rather than being reinvented per page.
+
+Verified: `npm run check` green, 22 tests across three suites; `npm run build` produces a
+268 kB bundle, 85 kB gzipped.
+
+Next task depends on: `useAuth`, `ConfirmButton` and the stubbed transport in
+`test/helpers.tsx`.

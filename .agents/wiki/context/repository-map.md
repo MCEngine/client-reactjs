@@ -21,15 +21,26 @@ there once, and this page links rather than repeats them.
 | `.agents/memory/` | Current state and this repository's entries in the platform task record. |
 | `wiki/` | Human documentation, plus `wiki/logs/` for version history. |
 | `README.md`, `LICENSE` | Overview and the MIT license. |
+| `package.json` | `@mcengine/client-reactjs` at `0.0.0`. The version carrier. |
+| `vite.config.ts` | The dev server with `/api` proxied, and the Vitest configuration. |
+| `index.html`, `src/main.tsx` | The mount point and the entry. |
+| `src/api/` | The one place that calls `fetch`, the server's payload types, and the error types. |
+| `src/auth/AuthContext.tsx` | The access token, held in memory only. |
+| `src/components/` | `ConfirmButton` and the async-read helpers. |
+| `src/routes/` | One file per page. |
+| `test/` | Vitest and Testing Library, plus `helpers.tsx` for a stubbed transport. |
 
 ## What is deliberately absent
 
-**There is no code yet.** No `package.json`, no `src/`, no `index.html`, no
-`vite.config.ts`, no `.gitignore`, no lockfile, no tests, no CI.
+**There are almost no pages.** The shell, the product list and a not-found route are all
+that exist. No sign-in form, no account or organization administration, no token management,
+no `/product/*` settings pages, no fleet view — those are the next two tasks.
 
-That is not an oversight. The agent instruction system is the first task in this repository
-of a twenty-task plan; the React skeleton arrives later, and the pages after it. The plan
-table lives in `MCEngine/plugin-manager` at
+There is no styling either: the markup is semantic and unstyled, so a page is written once
+and the look is applied to all of them at the end rather than per page. No CI workflow;
+none was asked for.
+
+The plan table lives in `MCEngine/plugin-manager` at
 `.agents/memory/tasks/mcpluginmanager-platform.md`, and this repository's own entries are in
 [`../../memory/tasks/mcpluginmanager-platform.md`](../../memory/tasks/mcpluginmanager-platform.md).
 
@@ -65,5 +76,16 @@ Never an `INDEX.md`. Never a third documentation tree. The authority is
   from a component, and never work around a server rule in the client.
 * **Everything in the bundle is public.** Anything committed here that a build inlines is
   readable by anyone who loads the page. Secrets belong on the server.
+* **The access token is in memory and nowhere else.** `localStorage` is readable by any
+  script that reaches the page and outlives the tab; the refresh cookie is HttpOnly and the
+  panel cannot read it, which is what lets a reload recover a session with nothing stored.
+* **An injected API client in a test replaces the whole transport**, including the refresh
+  call. `AuthProvider` uses it for both — building a real client for the refresh would send
+  that one request past the stub to the network, and the symptom is a session that never
+  recovers.
+* **`signOut` never rejects.** The person clicked it; they are signed out locally whatever
+  the server said, and there is no recovery a caller could perform with the error.
+* **Test by role and name, not by test id.** A test that can only find an element by an
+  attribute added for the test is not checking what the person sees.
 * **Creating a log directory is a version claim** and needs explicit approval. Appending to
   the existing one does not.
