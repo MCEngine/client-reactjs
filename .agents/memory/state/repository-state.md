@@ -32,6 +32,14 @@ Plus the four `/product/*` pages: `src/routes/product/`.
 to `API_UPSTREAM` — the panel and the API are one origin by design, because the refresh cookie
 is `HttpOnly`. `wiki/environments/deployment.md` has the detail.
 
+**The image finds its API on any platform, not only on a Docker network.** `DNS_RESOLVER` is
+derived from `/etc/resolv.conf` by `docker/10-api-upstream.envsh` rather than defaulted to
+Docker's embedded DNS, and `API_UPSTREAM` takes an optional scheme — `https://host` is proxied
+with SNI and certificate verification, for an API that has no private address at all.
+`test/docker.test.ts` covers the script without needing a daemon. `@types/node` is a dev
+dependency for that suite only; `"types"` in `tsconfig.json` is unchanged, so `src/` still has
+no Node globals.
+
 **One origin is not a preference, it is the only supported configuration**, and the
 documentation now says so: the server has no CORS layer and hardcodes `SameSite=Lax`, so a
 bundle built with `VITE_API_BASE_URL` pointing elsewhere gets an unanswered preflight and a

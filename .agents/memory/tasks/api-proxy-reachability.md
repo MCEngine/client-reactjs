@@ -112,3 +112,7 @@ service named.
 The existing `client.test.ts` case for a non-envelope body used a `502`, so it failed on this
 change — correctly. It moved to `500`, which is still the case it was written for, and the two
 gateway cases are covered by new tests.
+
+### Task 4 — chore/api-proxy-reachability-release
+
+The changelog entries, the state file, and this record. `0.0.0` did not move.
