@@ -1,7 +1,12 @@
 # Changelog — 0.0.0
 
+**2026-09-11** — the MCPluginManager web panel: signing in across devices, administering a
+namespace or an organization, publishing versioned product jars, minting the scoped tokens a
+Minecraft server downloads with, and telling each registered server what to run.
+
 Pre-release. This version covers the repository from its initial commit up to the first
-release, and is appended to as each task lands.
+release. Nothing has shipped; `0.0.0` has not moved and the first version that ships is the
+one that asks.
 
 ## Added
 

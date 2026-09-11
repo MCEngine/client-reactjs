@@ -166,3 +166,21 @@ produces a 292 kB bundle, 91 kB gzipped.
 
 Next task depends on: nothing in this repository. What remains is the plugin, and then the
 release.
+
+### Task 20 — chore/release
+
+The release, run in all three repositories at once. Here it wrote three things: this entry,
+the release header on `wiki/logs/0/0/0/CHANGELOG.md`, and `repository-state.md` brought
+current. The plan table it fills the `PR` column of lives in `MCEngine/plugin-manager`, and
+so does the account of what the twenty tasks add up to.
+
+**The version did not move.** `@mcengine/client-reactjs` stays at `0.0.0`, and
+`wiki/logs/0/0/0/` already existed, so this appends rather than making a version claim.
+
+**What is open, named so it is not mistaken for done.** No styling: the markup is semantic
+and unstyled on purpose, so a look is applied to every page at once rather than reinvented
+per page. No pagination controls, though the API client and the payload types both carry
+cursors — every list renders its first page. No sign-in through an OAuth provider, because
+the server has no provider redirect to send anyone to. No CI workflow.
+
+Next task depends on: nothing. This is the last task in this repository's stack.

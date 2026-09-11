@@ -7,7 +7,7 @@ description: What this repository contains right now, what it does not yet, and 
 
 Overwritten in place, always current.
 
-## As of the agent instruction system landing
+## As of the 0.0.0 pre-release
 
 `MCEngine/client-reactjs` is a **Mode B consumer** of the shared instruction set served by
 the `lxagents-agents-base` connector. It declares no overrides.
@@ -47,8 +47,13 @@ twelve-line `useAsync` covers what it needs from a read.
 
 ## Next step
 
-Nothing in this repository until the release task. What remains is `MCEngine/plugin-manager`:
-the plugin's transport, its version comparison, and the install, update and delete flow.
+**The twenty-task plan is finished and its record is closed.** Follow-up work opens a new
+record rather than appending to `../tasks/mcpluginmanager-platform.md`, which stays as the
+account of how this repository got here. The plan table itself is in
+`MCEngine/plugin-manager` at `.agents/memory/tasks/mcpluginmanager-platform.md`.
 
-The full ordered plan is in `MCEngine/plugin-manager` at
-`.agents/memory/tasks/mcpluginmanager-platform.md`.
+The candidates, in the order they matter: styling, which is now one pass over semantic markup
+rather than a retrofit; pagination controls, since the client and the payload types already
+carry the cursors; a sign-in through an OAuth provider, once `MCEngine/server-expressjs` has a
+provider redirect to send anyone to; and a CI workflow. A first shipping version is a version
+claim and therefore asks first.
