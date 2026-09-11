@@ -79,7 +79,9 @@ describe('the API client', () => {
 
   it('handles a failure body that is not an envelope', async () => {
     const api = createApiClient({
-      fetcher: (async () => new Response('<html>502</html>', { status: 502 })) as unknown as typeof fetch,
+      // 500 rather than 502: a 502 has its own message now, because it comes
+      // from the proxy in front of the API rather than from the API.
+      fetcher: (async () => new Response('<html>500</html>', { status: 500 })) as unknown as typeof fetch,
     });
     const error = await caught<ApiError>(() => api.request('/api/v1/me'));
     expect(error).toBeInstanceOf(ApiError);
@@ -152,5 +154,43 @@ describe('the API client', () => {
     await api.request('/api/v1/products', { query: { kind: 'bukkit_plugin', cursor: undefined } });
     expect(seen).toContain('kind=bukkit_plugin');
     expect(seen).not.toContain('cursor');
+  });
+});
+
+describe('a failure that did not come from the API', () => {
+  it('reads as unreachable when nginx answers 502 with its own HTML', async () => {
+    const api = createApiClient({
+      fetcher: async () =>
+        new Response('<html><head><title>502 Bad Gateway</title></head></html>', {
+          status: 502,
+          headers: { 'Content-Type': 'text/html' },
+        }),
+    });
+
+    // The panel's proxy cannot reach the upstream: the person needs to know
+    // that, not the number.
+    await expect(api.request('/api/v1/meta')).rejects.toMatchObject({
+      status: 502,
+      code: 'server_unreachable',
+    });
+    await expect(api.request('/api/v1/meta')).rejects.toThrow(/could not reach the server/);
+  });
+
+  it('still shows the API its own message when it sent an envelope', async () => {
+    const api = createApiClient({
+      fetcher: async () =>
+        new Response(JSON.stringify({ error: { code: 'not_ready', message: 'The database is unreachable.' } }), {
+          status: 503,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+    });
+
+    // A 503 from the service itself is not the proxy failing, and replacing
+    // its message would hide the dependency it named.
+    await expect(api.request('/api/v1/meta')).rejects.toMatchObject({
+      status: 503,
+      code: 'not_ready',
+    });
+    await expect(api.request('/api/v1/meta')).rejects.toThrow('The database is unreachable.');
   });
 });
