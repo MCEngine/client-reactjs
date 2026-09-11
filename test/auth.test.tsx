@@ -206,3 +206,28 @@ describe('the organization entry in the nav', () => {
     expect(nav.queryByRole('link', { name: 'Organization' })).not.toBeInTheDocument();
   });
 });
+
+describe('the shell', () => {
+  it('puts the pages and the footer in the column beside the rail', async () => {
+    const client = testClient(
+      stubFetch({
+        'POST /api/v1/auth/refresh': {
+          status: 401,
+          body: { error: { code: 'no_refresh_token', message: 'none' } },
+        },
+      }),
+    );
+
+    const { container } = renderWithAuth(<App />, client);
+    await screen.findByRole('link', { name: 'Sign in' });
+
+    // Above 900px the header is taken out of the flow as a fixed rail, and
+    // `.shell` is what holds the page clear of it. A page rendered outside that
+    // wrapper would sit under the rail.
+    const shell = container.querySelector('.shell');
+    expect(shell).not.toBeNull();
+    expect(shell!.querySelector('main')).not.toBeNull();
+    expect(shell!.querySelector('.site-footer')).not.toBeNull();
+    expect(container.querySelector('.site-header')!.closest('.shell')).toBeNull();
+  });
+});
