@@ -11,6 +11,10 @@ import { Tokens } from './routes/account/Tokens.js';
 import { CreateOrg } from './routes/org/CreateOrg.js';
 import { Members } from './routes/org/Members.js';
 import { Fleet } from './routes/fleet/Fleet.js';
+import { ProductPage } from './routes/product/ProductPage.js';
+import { ProductSettings } from './routes/product/ProductSettings.js';
+import { ProductUpdate } from './routes/product/ProductUpdate.js';
+import { ProductGeneral } from './routes/product/ProductGeneral.js';
 import { ServerDetail } from './routes/fleet/ServerDetail.js';
 
 /**
@@ -47,6 +51,37 @@ export function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<SignIn />} />
         <Route path="/register" element={<Register />} />
+
+        {/*
+          The four product routes, exactly as specified: the public page, the
+          settings landing, publishing a version, and general. Only the public
+          one is reachable without signing in.
+        */}
+        <Route path="/product/:productId" element={<ProductPage />} />
+        <Route
+          path="/product/:productId/settings"
+          element={
+            <RequireAuth>
+              <ProductSettings />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/product/:productId/setting/update"
+          element={
+            <RequireAuth>
+              <ProductUpdate />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/product/:productId/setting/general"
+          element={
+            <RequireAuth>
+              <ProductGeneral />
+            </RequireAuth>
+          }
+        />
 
         <Route
           path="/settings/account"

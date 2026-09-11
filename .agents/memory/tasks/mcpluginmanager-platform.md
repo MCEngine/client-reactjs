@@ -131,3 +131,38 @@ produces a 285 kB bundle, 89 kB gzipped.
 
 Next task depends on: `ConfirmButton`, `Form` and `CooldownNotice`, all of which the product
 settings pages reuse.
+
+### Task 17 — feat/product
+
+The four `/product/*` routes, exactly as specified: the public page, the settings landing,
+publishing a version, and general.
+
+**`repo_url` is shown only when set, and nothing renders in its place when it is not.** The
+server omits the key rather than sending null, and clearing the field in the general settings
+form sends `null` rather than `""` — because `""` is *set*, and the product page would show
+an empty link. Two tests hold the pair.
+
+**The description renders as text, never as markup.** A publisher writes it and everyone
+reads it, so interpreting it as HTML would make the product page a cross-site scripting
+surface. There is a test that puts an `<img onerror>` in a description and asserts no image
+element exists.
+
+**One file input, and the page says why.** A version carries exactly one jar — the server
+enforces it as a primary key — so a second input would be a control that cannot succeed. The
+form says "publish them as two products" instead.
+
+**Deleting asks for the id and then sends it.** The dialog's typed phrase and the request body
+are the same string, so a confirmed dialog is never answered with `confirmation_mismatch`.
+
+**`required` was removed from the file input, and this is a small correction worth keeping.**
+jsdom never marks a file input valid after `userEvent.upload`, so browser validation silently
+blocked every submit and the failure looked like a form that did nothing. The handler already
+checks the file and reports "Choose a jar to upload." through the same error line as every
+other failure — which is a better message than the browser's bubble, and the reason the
+attribute is gone rather than the test being worked around.
+
+Verified: `npm run check` green, 49 tests across five suites, 15 of them new; `npm run build`
+produces a 292 kB bundle, 91 kB gzipped.
+
+Next task depends on: nothing in this repository. What remains is the plugin, and then the
+release.

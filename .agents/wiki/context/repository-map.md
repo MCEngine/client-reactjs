@@ -33,9 +33,12 @@ there once, and this page links rather than repeats them.
 
 ## What is deliberately absent
 
-**The `/product/*` pages do not exist yet** — the product page, its settings landing, the
-version upload form, and the general page carrying the id cooldown and the confirmed delete.
-Everything else the panel needs is here.
+**There is no styling.** The markup is semantic and unstyled on purpose, so the look is
+applied to every page at once rather than reinvented per page. There are no pagination
+controls either, though the API client and the payload types both carry cursors. No CI
+workflow; none was asked for.
+
+Every route the contract specifies is otherwise built.
 
 There is no styling either: the markup is semantic and unstyled, so a page is written once
 and the look is applied to all of them at the end rather than per page. No CI workflow;
@@ -91,6 +94,12 @@ Never an `INDEX.md`. Never a third documentation tree. The authority is
 * **A rule the server owns is rendered, never recomputed.** The cooldown date comes from the
   error's `available_at`; a disabled control carries the server's reason in a `title`. A
   second implementation would eventually disagree, and the browser would be the wrong copy.
+* **A product description is rendered as text.** A publisher writes it and everyone reads
+  it; interpreting it as markup would make the product page a scripting surface.
+* **Clearing an optional field sends `null`, not `""`.** An empty string is *set*, and the
+  product page shows a link whenever the field is set.
+* **jsdom never marks a file input valid**, so `required` on one silently blocks every submit
+  in a test. Validate the file in the handler instead — the message is better anyway.
 * **Test by role and name, not by test id.** A test that can only find an element by an
   attribute added for the test is not checking what the person sees.
 * **Creating a log directory is a version claim** and needs explicit approval. Appending to

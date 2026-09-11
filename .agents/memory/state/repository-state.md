@@ -25,9 +25,14 @@ Plus the account, organization and fleet pages: `src/routes/account/`, `src/rout
 `src/routes/fleet/`, `src/routes/RequireAuth.tsx`, and the `Form`, `Field` and
 `CooldownNotice` components.
 
-**Does not exist:** the `/product/*` pages — the product page itself, its settings landing,
-the version upload form, and the general page with the id cooldown and the confirmed delete.
-No styling — the markup is semantic and unstyled on purpose. No CI workflow.
+Plus the four `/product/*` pages: `src/routes/product/`.
+
+**Does not exist:** styling. The markup is semantic and unstyled on purpose, so the look is
+applied to every page at once rather than reinvented per page. No CI workflow; none was
+asked for. No pagination controls, though the API client and the payload types both carry
+cursors.
+
+**The panel is otherwise complete against `wiki/information/api-contract.md`.**
 
 ## Stack
 
@@ -37,14 +42,13 @@ jsdom. Three runtime dependencies — React, React DOM and the router. No state 
 data-fetching library, no component library: the panel holds no state of its own, and a
 twelve-line `useAsync` covers what it needs from a read.
 
-**Verified:** `npm run check` green — `tsc --noEmit` clean and 34 tests across four suites.
-`npm run build` produces a 285 kB bundle, 89 kB gzipped.
+**Verified:** `npm run check` green — `tsc --noEmit` clean and 49 tests across five suites.
+`npm run build` produces a 292 kB bundle, 91 kB gzipped.
 
 ## Next step
 
-The product pages: `/product/:product_id/`, `/product/:product_id/settings/`,
-`/product/:product_id/setting/update/`, and `/product/:product_id/setting/general/` with the
-thirty-day id cooldown and a delete that requires the id to be repeated.
+Nothing in this repository until the release task. What remains is `MCEngine/plugin-manager`:
+the plugin's transport, its version comparison, and the install, update and delete flow.
 
 The full ordered plan is in `MCEngine/plugin-manager` at
 `.agents/memory/tasks/mcpluginmanager-platform.md`.

@@ -28,6 +28,11 @@ release, and is appended to as each task lands.
 - Creating an organization, and managing its members, roles and storage usage.
 - The fleet view: registering a server (its key shown once, for `config.yml`) and seeing the
   drift between what each server has installed and what it should have.
+- The four product routes: `/product/:product_id/` showing the id, name, detail and
+  publishing organization — and the source repository only when it is set;
+  `/product/:product_id/settings/`; `/product/:product_id/setting/update/` with one file
+  input and the remaining quota; and `/product/:product_id/setting/general/` with the
+  thirty-day id cooldown and a delete that asks for the id and then sends it.
 
 ## Changed
 
