@@ -125,4 +125,10 @@ one that asks.
 - `src/components/TokenManager.tsx` — the personal token page and an organization's differ only
   in the collection they read, so the list, the mint form, the scopes and the shown-once rule are
   one component.
+- **The role sits inside its organization card.** `.card-grid > li` is `display: contents`, so
+  every child of the `li` becomes a grid item — the role chip beside the card was taking a cell
+  of its own. It is a badge inside the card now, the same idiom the members page uses.
+- **Each token says who minted it.** The organization's token page shows *Minted by `<handle>`*,
+  from the `created_by` the server now returns. An organization's token acts as the organization
+  and outlives whoever created it, so the list is where that has to be readable.
 

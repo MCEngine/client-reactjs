@@ -31,7 +31,8 @@ Plus the four `/product/*` pages: `src/routes/product/`.
 lists what you belong to — `GET /me/orgs`, added for this — and creates one. Each has a settings
 landing at `/org/:handle/settings` and a page per subject under `/org/:handle/setting/`, mirroring
 how a product is administered. Token management is one component, `TokenManager`, used by both the
-personal page and an organization's.
+personal page and an organization's, and it names who minted each token — the only readable
+record of that for a credential the organization owns.
 
 **Ships as a container.** `Dockerfile` builds the bundle with Node and serves it from
 `nginxinc/nginx-unprivileged` on port 8080, with `docker/default.conf.template` proxying `/api`
