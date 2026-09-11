@@ -602,3 +602,49 @@ details.acc[open] > summary::before {
 .md-code {
   overflow-x: auto;
 }
+
+/* ------------------------------------------------------------------ modal */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  /* A scrim, not a glass surface: it dims the page on purpose so the dialog is
+     the only thing to act on. No blur — the dialog below is what must be
+     opaque, and blurring what you are dimming buys nothing. */
+  background: rgba(24, 27, 33, 0.45);
+}
+
+.modal__dialog {
+  width: min(30rem, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.4rem 1.5rem 1.2rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--shadow-md);
+
+  /*
+   * OPAQUE, and no backdrop-filter. This covers page content, which is the
+   * case silver-glass.md §3 names: a translucent panel over text is unreadable
+   * at the edges, and a child with its own blur can lose its background paint
+   * where the property is unsupported. See the mobile menu, same rule.
+   */
+  background: var(--surface-solid);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.modal__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+}
+
+.modal__dialog .btn-row {
+  margin-top: 1rem;
+  justify-content: flex-end;
+}

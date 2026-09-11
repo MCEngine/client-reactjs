@@ -50,3 +50,34 @@ Nine cases, three of them about exactly that: a script tag, an `img onerror`, an
 
 `.prose` in `components.css` styles a rendered body — the only place in the panel where a heading
 or a list is written by somebody other than whoever wrote the page.
+
+### Task 6 — feat/news-pages
+
+Five routes: `/news`, `/news/:newsId`, `/news/create`, `/news/edit/:newsId` and
+`/news/:newsId/settings`. `NewsForm` is shared by writing and editing — they differ only in what
+they start from and where they send it — and its preview uses the **same** `Markdown` component
+the published page uses, so a preview is not an approximation of what a reader gets.
+
+The list pages by cursor and loads more when the end of the list comes into view, watched with an
+`IntersectionObserver` rather than a scroll handler: an observer fires when the sentinel is
+actually visible, where a scroll handler guesses from pixel arithmetic on every frame. The **Load
+more** button is not a fallback nobody sees — it is how this works with a keyboard, and in jsdom,
+which has no observer.
+
+`ConfirmButton` became a **dialog over the page** rather than a panel that expands in place: the
+request asked for a popup, and a destructive action should interrupt. Escape cancels, a click on
+the scrim cancels, and the cancel button takes focus when it opens — the key a hurried person
+hits and the button focus lands on are both the safe one. That changed three existing tests from
+`role="group"` to `role="dialog"`, which is the more accurate role.
+
+Verified in Chromium against the built bundle, with a stub serving 25 items:
+
+```
+on arrival:      10 items, 1 request
+after scroll 1:  20 items, 2 requests   cursor 01NEWS016
+after scroll 2:  25 items, 3 requests   cursor 01NEWS006
+after scroll 3:  25 items, 3 requests   (a short page ends it)
+```
+
+and the detail page at 1280 and 390: `h1` "Release 25", the body's own `#` rendering as an `h2`
+under it, `**shipped**` bold, no horizontal overflow.

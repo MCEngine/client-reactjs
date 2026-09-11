@@ -4,6 +4,11 @@ import { useAuth } from './auth/AuthContext.js';
 import { Home } from './routes/Home.js';
 import { Products } from './routes/Products.js';
 import { NotFound } from './routes/NotFound.js';
+import { NewsList } from './routes/news/NewsList.js';
+import { NewsDetail } from './routes/news/NewsDetail.js';
+import { NewsCreate } from './routes/news/NewsCreate.js';
+import { NewsEdit } from './routes/news/NewsEdit.js';
+import { NewsSettings } from './routes/news/NewsSettings.js';
 import { RequireAuth } from './routes/RequireAuth.js';
 import { SignIn } from './routes/account/SignIn.js';
 import { Register } from './routes/account/Register.js';
@@ -78,6 +83,9 @@ export function App() {
             <NavLink className={navLink} to="/products" onClick={close}>
               Products
             </NavLink>
+            <NavLink className={navLink} to="/news" onClick={close}>
+              News
+            </NavLink>
 
             {status === 'loading' && (
               <span className="nav__status" role="status">
@@ -132,6 +140,37 @@ export function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Products />} />
+        {/*
+          Static segments outrank dynamic ones in the router's ranking, so
+          /news/create is never read as a news id.
+        */}
+        <Route path="/news" element={<NewsList />} />
+        <Route path="/news/:newsId" element={<NewsDetail />} />
+        <Route
+          path="/news/create"
+          element={
+            <RequireAuth>
+              <NewsCreate />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/news/edit/:newsId"
+          element={
+            <RequireAuth>
+              <NewsEdit />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/news/:newsId/settings"
+          element={
+            <RequireAuth>
+              <NewsSettings />
+            </RequireAuth>
+          }
+        />
+
         <Route path="/login" element={<SignIn />} />
         <Route path="/register" element={<Register />} />
 

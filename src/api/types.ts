@@ -150,3 +150,15 @@ export interface Meta {
   readonly demo_account: { readonly email: string; readonly password: string } | null;
 }
 
+/** A news item. `body` is Markdown, as written — the server never renders it. */
+export interface News {
+  id: string;
+  title: string;
+  summary: string;
+  body: string;
+  created_at: string;
+  updated_at: string;
+  hidden: boolean;
+  hidden_at?: string;
+  author?: Account;
+}
