@@ -26,3 +26,4 @@ protocol's approval gate. See `{shared}/rules/memory-policy.md`.
 |---|---|
 | [`tasks/mcpluginmanager-platform.md`](../memory/tasks/mcpluginmanager-platform.md) | This repository's entries in the MCPluginManager platform plan. The plan table itself lives in `MCEngine/plugin-manager`. |
 | [`tasks/version-route.md`](../memory/tasks/version-route.md) | This repository's entries in the version-route plan. The plan table itself lives in `MCEngine/server-expressjs`. |
+| [`tasks/container-image.md`](../memory/tasks/container-image.md) | This repository's entries in the container-image plan. The plan table itself lives in `MCEngine/server-expressjs`. |

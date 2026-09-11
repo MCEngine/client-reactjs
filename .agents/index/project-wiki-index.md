@@ -25,3 +25,4 @@ are plain markdown with no frontmatter. This index never writes into `.agents/`.
 |---|---|
 | [`environments/setup.md`](../../wiki/environments/setup.md) | Requirements, the commands, why `/api` is proxied rather than pointed at another port, and how the tests stub the transport. |
 | [`environments/env.md`](../../wiki/environments/env.md) | Every environment variable, and why none of them may be secret. |
+| [`environments/deployment.md`](../../wiki/environments/deployment.md) | Running the panel as a container: the two build stages, why nginx proxies `/api`, what it does with each kind of request, and the cost of a cross-origin API. |
