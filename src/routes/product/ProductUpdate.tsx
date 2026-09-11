@@ -52,8 +52,22 @@ export function ProductUpdate() {
               onSubmit={async () => {
                 if (file === undefined) throw new Error('Choose a jar to upload.');
 
+                /*
+                 * The version is now a path segment, so an empty one would
+                 * request /versions/ and come back as a 404 that says nothing.
+                 * Checked here for the same reason the file is: the message a
+                 * person reads should name what is missing.
+                 */
+                const trimmed = version.trim();
+                if (trimmed === '') throw new Error('Enter a version, like 1.2.3.');
+
+                /*
+                 * The version is the address, not a field. The server refuses a
+                 * `version` in the body outright — a URL and a body that
+                 * disagree would otherwise publish the one in the URL and
+                 * report success — so it goes in the path and nowhere else.
+                 */
                 const form = new FormData();
-                form.set('version', version);
                 form.set('channel', channel);
                 if (changelog !== '') form.set('changelog', changelog);
                 if (minecraftVersion !== '') {
@@ -64,10 +78,10 @@ export function ProductUpdate() {
                 }
                 form.set('file', file);
 
-                await api.request(`/api/v1/products/${value.id}/versions`, {
-                  method: 'POST',
-                  form,
-                });
+                await api.request(
+                  `/api/v1/products/${value.id}/versions/${encodeURIComponent(trimmed)}`,
+                  { method: 'PUT', form },
+                );
                 setVersion('');
                 setChangelog('');
                 setFile(undefined);
