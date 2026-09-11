@@ -25,8 +25,8 @@ These belong to the image, not to the bundle. They are the ones a hosting platfo
 
 | Key | Default | Notes |
 |---|---|---|
-| `API_UPSTREAM` | `server:3000` | `host:port` that nginx proxies `/api` to. **This is the variable to set when the central server is somewhere else.** No scheme, no path. |
-| `DNS_RESOLVER` | `127.0.0.11` | Docker's embedded DNS. Set it to the platform's resolver anywhere that is not a Docker network. |
+| `API_UPSTREAM` | `server:3000` | Where nginx proxies `/api`. **This is the variable to set when the central server is somewhere else.** `host:port`, or `https://host` for an API that is only reachable over TLS. |
+| `DNS_RESOLVER` | taken from `/etc/resolv.conf` | nginx needs a resolver of its own for the proxy. Set this only to override the machine's. |
 
 ## Do not set `VITE_API_BASE_URL`
 

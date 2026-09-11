@@ -51,10 +51,22 @@ FROM nginxinc/nginx-unprivileged:${NGINX_VERSION} AS runtime
 
 # Where the panel sends /api. The base image runs envsubst over
 # /etc/nginx/templates/*.template at start-up, so this is set per container
-# rather than baked in at build.
-ENV API_UPSTREAM=server:3000 \
-    DNS_RESOLVER=127.0.0.11
+# rather than baked in at build. It may carry a scheme -- https:// reaches an
+# API that has no private address, such as a free-tier service on a host that
+# lets one send private traffic but not receive it.
+#
+# DNS_RESOLVER is deliberately *not* defaulted here. It used to be 127.0.0.11,
+# Docker's embedded DNS, which answers on a Docker network and nowhere else --
+# and nginx needs a resolver for the variable proxy_pass below, so on any other
+# platform every proxied request ran to timeout and returned 502 from a healthy
+# API. Left unset, the entrypoint script takes it from /etc/resolv.conf like
+# every other program on the machine. Set it to override that.
+ENV API_UPSTREAM=server:3000
 
+# --chmod because the entrypoint skips a file in /docker-entrypoint.d/ that is
+# not executable, and the image is unprivileged by then -- there is no root left
+# to chmod it afterwards.
+COPY --chmod=0755 docker/10-api-upstream.envsh /docker-entrypoint.d/10-api-upstream.envsh
 COPY docker/default.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
 

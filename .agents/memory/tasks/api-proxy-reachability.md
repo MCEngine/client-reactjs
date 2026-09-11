@@ -60,3 +60,38 @@ Docker, including one where the only address available is public and TLS-termina
 ### Task 1 — chore/api-proxy-reachability-plan
 
 This record and its row in `.agents/index/memory-index.md`. Nothing else.
+
+### Task 2 — fix/api-proxy
+
+`docker/10-api-upstream.envsh` is new and does two things before the template is rendered:
+takes the resolver from `/etc/resolv.conf` when `DNS_RESOLVER` is unset, and parses
+`API_UPSTREAM` into a scheme, an address, a `Host` and an SNI name. It is an `.envsh` because
+the base image *sources* those and executes plain `.sh` in a subshell, where an export would be
+lost; it is `--chmod=0755` in the `COPY` because the entrypoint silently skips a file that is
+not executable and the image has no root left by then.
+
+The template gained `resolver_timeout 5s`, the four `proxy_ssl_*` directives that make an https
+upstream real (SNI, verification against the base image's CA bundle), and `X-Forwarded-Host`,
+since `Host` is now the upstream's own over TLS. The Dockerfile no longer defaults
+`DNS_RESOLVER` at all — a default there would defeat the derivation, since the script only
+reads the file when the variable is empty.
+
+`test/docker.test.ts` sources the script the way the entrypoint does and asserts the derived
+values: two nameservers, a bracketed IPv6 one, an explicit override, an unreadable file, and
+six `API_UPSTREAM` shapes. Plus three guards — no `DNS_RESOLVER` in the Dockerfile, mode
+`100755` in the index, and every `${NAME}` in the template exported by the script. That last
+one is why an unsubstituted variable cannot reach nginx and fail at start-up, after the deploy
+has already reported success.
+
+Verified by running nginx against the rendered template: a private plaintext address answered
+`200`, the live server over `https://…onrender.com` answered `200` in 0.37s, and a self-signed
+TLS upstream was refused with `upstream SSL certificate verify error`, which is verification
+being on rather than asserted.
+
+Docs: `deployment.md` gained *On Render* and *The resolver*, and its value table now says a
+scheme is supported — it said "a scheme is a 500" one task ago, which was true then.
+
+`@types/node` was added as a **dev** dependency for that suite — the first Node types in this
+repository. `"types"` in `tsconfig.json` was deliberately left alone, so `node:child_process`
+resolves as an import while `process` stays undefined as a global: `src/` is browser code and
+must not start believing otherwise.
