@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { App } from '../src/App.js';
 import { renderWithAuth, stubFetch, testClient } from './helpers.js';
@@ -48,9 +48,14 @@ describe('the organization page', () => {
     expect(await screen.findByRole('link', { name: 'Acme settings' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Other settings' })).toBeInTheDocument();
     // The role is what decides whether the settings pages will let you do
-    // anything, so it is on the card rather than a page deeper.
-    expect(screen.getByText('owner')).toBeInTheDocument();
-    expect(screen.getByText('maintainer')).toBeInTheDocument();
+    // anything, so it is on the card rather than a page deeper — and *inside*
+    // it, because `.card-grid > li` is `display: contents` and anything beside
+    // the card takes a grid cell of its own.
+    const acme = screen.getByRole('link', { name: 'Acme settings' });
+    expect(within(acme).getByText('owner')).toBeInTheDocument();
+    expect(
+      within(screen.getByRole('link', { name: 'Other settings' })).getByText('maintainer'),
+    ).toBeInTheDocument();
   });
 
   it('says so plainly when you are in none, and still offers the form', async () => {

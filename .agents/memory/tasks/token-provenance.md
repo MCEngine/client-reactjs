@@ -63,3 +63,14 @@ Tasks 1 and 2 depend on nothing. Task 5 reads a field that task 3 adds, so it me
 ### Task 1 — chore/token-provenance-plan
 
 This record and its row in `.agents/index/memory-index.md`. Nothing else.
+
+### Task 2 — fix/org-card-role
+
+The role is a `.badge badge--accent` inside the card — the same idiom the members page uses for a
+role — wrapped in a plain span so it sizes to its text rather than stretching across the card as
+a flex item would.
+
+Verified in Chromium rather than by reading the CSS: the grid's items went from
+`[card, chip-row]` to `[card, card]`, and the badge's box is inside the card's at 1280px and
+390px. The test now asserts containment with `within(card)`, which the previous `getByText` could
+not: it passed while the chip was in the next cell.
