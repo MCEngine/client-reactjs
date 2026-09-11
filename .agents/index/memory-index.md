@@ -34,6 +34,8 @@ protocol's approval gate. See `{shared}/rules/memory-policy.md`.
 | [`tasks/api-proxy-reachability.md`](../memory/tasks/api-proxy-reachability.md) | The panel's nginx resolving its upstream on a platform that is not Docker: the confirmed six-task plan across two repositories. |
 | [`tasks/upstream-redirect.md`](../memory/tasks/upstream-redirect.md) | The proxy handing the browser's `Host` to a public upstream, turning a wrong `API_UPSTREAM` into an infinite redirect loop: the confirmed three-task plan. |
 | [`tasks/org-nav.md`](../memory/tasks/org-nav.md) | A nav entry for the organization page, and why it points at the create page rather than a list: the confirmed three-task plan. |
+| [`tasks/org-management.md`](../memory/tasks/org-management.md) | This repository's entries in the organization management plan. The plan table itself lives in `MCEngine/server-expressjs`. |
+| [`tasks/token-provenance.md`](../memory/tasks/token-provenance.md) | The role chip escaping its card, and an organization token whose creator is recorded but reaches nobody: the confirmed six-task plan. |
 
 ## Decisions
 
