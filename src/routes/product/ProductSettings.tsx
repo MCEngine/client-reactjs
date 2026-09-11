@@ -16,26 +16,54 @@ export function ProductSettings() {
   if (productId === undefined) return <NotFound />;
 
   return (
-    <main>
+    <main className="container">
       <AsyncBoundary state={product}>
         {(value) => (
           <>
+            <nav className="breadcrumbs" aria-label="Breadcrumb">
+              <Link to="/">Products</Link>
+              <span className="sep" aria-hidden="true">
+                /
+              </span>
+              <Link to={`/product/${value.slug}`}>{value.name}</Link>
+              <span className="sep" aria-hidden="true">
+                /
+              </span>
+              <span>Settings</span>
+            </nav>
+
             <h1>{value.name} settings</h1>
+
             <nav aria-label="Product settings">
-              <ul>
+              <ul className="card-grid">
                 <li>
-                  <Link to={`/product/${value.slug}/setting/update`}>Publish a version</Link>
-                  <p>Upload a jar, write its changelog, and say what it works with.</p>
+                  <Link
+                    className="card"
+                    to={`/product/${value.slug}/setting/update`}
+                    aria-label="Publish a version"
+                  >
+                    <span className="card__title">Publish a version</span>
+                    <span className="card__desc">
+                      Upload a jar, write its changelog, and say what it works with.
+                    </span>
+                    <span className="card__more">Publish →</span>
+                  </Link>
                 </li>
                 <li>
-                  <Link to={`/product/${value.slug}/setting/general`}>General</Link>
-                  <p>Rename the product, change its id, change its visibility, or delete it.</p>
+                  <Link
+                    className="card"
+                    to={`/product/${value.slug}/setting/general`}
+                    aria-label="General"
+                  >
+                    <span className="card__title">General</span>
+                    <span className="card__desc">
+                      Rename the product, change its id, change its visibility, or delete it.
+                    </span>
+                    <span className="card__more">Open →</span>
+                  </Link>
                 </li>
               </ul>
             </nav>
-            <p>
-              <Link to={`/product/${value.slug}`}>Back to the product page</Link>
-            </p>
           </>
         )}
       </AsyncBoundary>

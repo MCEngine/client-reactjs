@@ -27,14 +27,22 @@ export function ProductGeneral() {
   if (productId === undefined) return <NotFound />;
 
   return (
-    <main>
+    <main className="container">
       <h1>General settings</h1>
       <AsyncBoundary state={product}>
         {(value) => (
           <>
-            <p>
-              <Link to={`/product/${value.slug}/settings`}>Back to settings</Link>
-            </p>
+            <nav className="breadcrumbs" aria-label="Breadcrumb">
+              <Link to="/">Products</Link>
+              <span className="sep" aria-hidden="true">
+                /
+              </span>
+              <Link to={`/product/${value.slug}`}>{value.name}</Link>
+              <span className="sep" aria-hidden="true">
+                /
+              </span>
+              <Link to={`/product/${value.slug}/settings`}>Settings</Link>
+            </nav>
             <Details product={value} onSaved={() => product.reload()} />
             <Slug product={value} onSaved={() => product.reload()} />
             <Danger product={value} />
@@ -52,7 +60,7 @@ export function ProductGeneral() {
     const [visibility, setVisibility] = useState(current.visibility);
 
     return (
-      <section aria-labelledby="details-heading">
+      <section className="panel" aria-labelledby="details-heading">
         <h2 id="details-heading">Details</h2>
         <Form
           submitLabel="Save"
@@ -75,10 +83,14 @@ export function ProductGeneral() {
         >
           <Field label="Name" value={name} onChange={setName} required />
           <Field label="Summary" value={summary} onChange={setSummary} required />
-          <p>
+          <p className="field">
             <label>
               Description
-              <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
+              <textarea
+                rows={5}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
             </label>
           </p>
           <Field
@@ -88,7 +100,7 @@ export function ProductGeneral() {
             onChange={setRepoUrl}
             hint="Optional. Leave it empty and the product page shows no source link at all."
           />
-          <p>
+          <p className="field">
             <label>
               Visibility
               <select
@@ -111,9 +123,9 @@ export function ProductGeneral() {
     const [error, setError] = useState<unknown>(undefined);
 
     return (
-      <section aria-labelledby="id-heading">
+      <section className="panel" aria-labelledby="id-heading">
         <h2 id="id-heading">Product id</h2>
-        <p>
+        <p className="muted">
           The id is the address of this page and is unique across every organization. Changing
           it releases the old one and locks the new one for thirty days. Existing links stop
           working.

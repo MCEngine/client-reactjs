@@ -11,9 +11,11 @@ export function CreateOrg() {
   const [displayName, setDisplayName] = useState('');
 
   return (
-    <main>
+    <main className="container narrow">
+      <div className="panel">
+      <p className="eyebrow">Publishing</p>
       <h1>Create an organization</h1>
-      <p>
+      <p className="lead">
         Only an organization can publish a product. You become its owner, and an organization
         has exactly one — ownership moves by transfer, never by invitation.
       </p>
@@ -36,6 +38,7 @@ export function CreateOrg() {
         />
         <Field label="Display name" value={displayName} onChange={setDisplayName} required />
       </Form>
+      </div>
     </main>
   );
 }

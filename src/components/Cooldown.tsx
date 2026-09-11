@@ -11,11 +11,21 @@ import { ApiError } from '../api/errors.js';
 export function CooldownNotice({ error }: { error: unknown }) {
   if (!(error instanceof ApiError)) return null;
   const at = error.availableAt;
-  if (at === undefined) return <p role="alert">{error.message}</p>;
 
   return (
-    <p role="alert">
-      {error.message} Available again on <time dateTime={at.toISOString()}>{at.toDateString()}</time>.
-    </p>
+    <div className="callout callout--warn" role="alert">
+      <span className="callout__icon" aria-hidden="true">
+        !
+      </span>
+      <p className="callout__body">
+        {error.message}
+        {at !== undefined && (
+          <>
+            {' '}
+            Available again on <time dateTime={at.toISOString()}>{at.toDateString()}</time>.
+          </>
+        )}
+      </p>
+    </div>
   );
 }

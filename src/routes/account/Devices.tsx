@@ -8,22 +8,31 @@ export function Devices() {
   const state = useAsync(() => api.request<Page<Session>>('/api/v1/me/sessions'), [api]);
 
   return (
-    <main>
+    <main className="container">
+      <p className="eyebrow">Security</p>
       <h1>Signed-in devices</h1>
-      <p>
+      <p className="lead">
         Each device holds its own session. Revoking one does not touch the others — signing in
         somewhere new never signs you out here.
       </p>
 
-      <AsyncBoundary state={state} isEmpty={(p) => p.data.length === 0} empty={<p>No other devices.</p>}>
+      <AsyncBoundary
+        state={state}
+        isEmpty={(p) => p.data.length === 0}
+        empty={<p className="muted">No other devices.</p>}
+      >
         {(page) => (
-          <ul>
+          <ul className="stack">
             {page.data.map((session) => (
               <li key={session.id}>
-                <strong>{session.device_label ?? 'Unnamed device'}</strong>
-                {session.current && <span> (this device)</span>}
-                <div>Last used {new Date(session.last_used_at).toLocaleString()}</div>
-                {session.ip_last_seen !== undefined && <div>From {session.ip_last_seen}</div>}
+                <div className="row-between">
+                  <strong>{session.device_label ?? 'Unnamed device'}</strong>
+                  {session.current && <span className="badge badge--accent">this device</span>}
+                </div>
+                <p className="muted">
+                  Last used {new Date(session.last_used_at).toLocaleString()}
+                  {session.ip_last_seen !== undefined && <> · from {session.ip_last_seen}</>}
+                </p>
 
                 {!session.current && (
                   <ConfirmButton

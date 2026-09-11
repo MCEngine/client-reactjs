@@ -12,7 +12,9 @@ export function Register() {
   const [password, setPassword] = useState('');
 
   return (
-    <main>
+    <main className="container narrow">
+      <div className="panel">
+      <p className="eyebrow">Get started</p>
       <h1>Create an account</h1>
       <Form
         submitLabel="Create account"
@@ -39,9 +41,10 @@ export function Register() {
           hint="At least twelve characters. Length beats punctuation."
         />
       </Form>
-      <p>
+      <p className="muted">
         Already have one? <Link to="/login">Sign in</Link>.
       </p>
+      </div>
     </main>
   );
 }

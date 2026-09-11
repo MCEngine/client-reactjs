@@ -1,4 +1,5 @@
-import { Link, Route, Routes } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, NavLink, Route, Routes } from 'react-router-dom';
 import { useAuth } from './auth/AuthContext.js';
 import { Home } from './routes/Home.js';
 import { NotFound } from './routes/NotFound.js';
@@ -25,25 +26,85 @@ import { ServerDetail } from './routes/fleet/ServerDetail.js';
  */
 export function App() {
   const { status, account, signOut } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  /*
+   * The panel is the design system's "runtime-composed chrome" without the
+   * runtime: this component *is* the one file navigation lives in, and
+   * `NavLink` already knows which route is active. See
+   * .agents/design/panel-application.md.
+   */
+  const navLink = ({ isActive }: { isActive: boolean }) =>
+    isActive ? 'nav__link is-active' : 'nav__link';
+
+  // Following a link on a phone should close the menu that covers the page.
+  const close = () => setMenuOpen(false);
 
   return (
     <>
-      <header>
-        <Link to="/">MCPluginManager</Link>
-        <nav aria-label="Account">
-          {status === 'loading' && <span role="status">Checking your session…</span>}
-          {status === 'anonymous' && <Link to="/login">Sign in</Link>}
-          {status === 'authenticated' && account !== undefined && (
-            <>
-              <Link to="/settings/account">{account.display_name}</Link>
-              <Link to="/settings/devices">Devices</Link>
-              <Link to="/settings/tokens">Tokens</Link>
-              <Link to="/fleet">Servers</Link>
-              <button type="button" onClick={() => void signOut()}>
-                Sign out
-              </button>
-            </>
-          )}
+      <header className="site-header">
+        <nav className="nav" aria-label="Main">
+          <Link className="nav__brand" to="/" onClick={close}>
+            MCPluginManager
+          </Link>
+
+          <button
+            className="nav__toggle"
+            type="button"
+            aria-expanded={menuOpen}
+            aria-controls="nav-links"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            {menuOpen ? 'Close' : 'Menu'}
+          </button>
+
+          <div
+            className={menuOpen ? 'nav__links is-open' : 'nav__links'}
+            id="nav-links"
+          >
+            <NavLink className={navLink} to="/" end onClick={close}>
+              Products
+            </NavLink>
+
+            {status === 'loading' && (
+              <span className="nav__status" role="status">
+                Checking your session…
+              </span>
+            )}
+
+            {status === 'anonymous' && (
+              <NavLink className={navLink} to="/login" onClick={close}>
+                Sign in
+              </NavLink>
+            )}
+
+            {status === 'authenticated' && account !== undefined && (
+              <>
+                <NavLink className={navLink} to="/fleet" onClick={close}>
+                  Servers
+                </NavLink>
+                <NavLink className={navLink} to="/settings/tokens" onClick={close}>
+                  Tokens
+                </NavLink>
+                <NavLink className={navLink} to="/settings/devices" onClick={close}>
+                  Devices
+                </NavLink>
+                <NavLink className={navLink} to="/settings/account" onClick={close}>
+                  {account.display_name}
+                </NavLink>
+                <button
+                  className="btn btn--quiet"
+                  type="button"
+                  onClick={() => {
+                    close();
+                    void signOut();
+                  }}
+                >
+                  Sign out
+                </button>
+              </>
+            )}
+          </div>
         </nav>
       </header>
 
@@ -144,6 +205,16 @@ export function App() {
 
         <Route path="*" element={<NotFound />} />
       </Routes>
+
+      <footer className="site-footer">
+        <div className="site-footer__inner">
+          <span className="site-footer__brand">MCPluginManager</span>
+          <span>
+            This panel holds no state of its own — every fact on it comes from the central
+            server.
+          </span>
+        </div>
+      </footer>
     </>
   );
 }

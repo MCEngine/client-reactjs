@@ -11,7 +11,9 @@ export function SignIn() {
   const [deviceLabel, setDeviceLabel] = useState('');
 
   return (
-    <main>
+    <main className="container narrow">
+      <div className="panel">
+      <p className="eyebrow">Welcome back</p>
       <h1>Sign in</h1>
       <Form
         submitLabel="Sign in"
@@ -29,9 +31,10 @@ export function SignIn() {
           hint="Optional. It appears in your device list so you can tell sessions apart."
         />
       </Form>
-      <p>
+      <p className="muted">
         No account? <Link to="/register">Create one</Link>.
       </p>
+      </div>
     </main>
   );
 }

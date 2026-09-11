@@ -37,11 +37,29 @@ export function Form({ submitLabel, children, onSubmit, successMessage }: FormPr
   return (
     <form onSubmit={submit}>
       {children}
-      {error !== undefined && <p role="alert">{error}</p>}
-      {done && successMessage !== undefined && <p role="status">{successMessage}</p>}
-      <button type="submit" disabled={busy}>
-        {busy ? 'Working…' : submitLabel}
-      </button>
+
+      {error !== undefined && (
+        <div className="callout callout--danger" role="alert">
+          <span className="callout__icon" aria-hidden="true">
+            !
+          </span>
+          <p className="callout__body">{error}</p>
+        </div>
+      )}
+      {done && successMessage !== undefined && (
+        <div className="callout callout--ok" role="status">
+          <span className="callout__icon" aria-hidden="true">
+            ✓
+          </span>
+          <p className="callout__body">{successMessage}</p>
+        </div>
+      )}
+
+      <div className="form__actions">
+        <button className="btn btn--primary" type="submit" disabled={busy}>
+          {busy ? 'Working…' : submitLabel}
+        </button>
+      </div>
     </form>
   );
 }
@@ -58,7 +76,7 @@ export interface FieldProps {
 
 export function Field({ label, value, onChange, type = 'text', required, hint, disabled }: FieldProps) {
   return (
-    <p>
+    <p className="field">
       <label>
         {label}
         <input
@@ -69,7 +87,7 @@ export function Field({ label, value, onChange, type = 'text', required, hint, d
           disabled={disabled}
         />
       </label>
-      {hint !== undefined && <small>{hint}</small>}
+      {hint !== undefined && <small className="field__hint">{hint}</small>}
     </p>
   );
 }
