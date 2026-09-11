@@ -45,6 +45,12 @@ export function Organization() {
           <ul className="card-grid">
             {page.data.map((membership) => (
               <li key={membership.org.id}>
+                {/*
+                  Everything about one organization is inside the card, and that
+                  is structural rather than cosmetic: `.card-grid > li` is
+                  `display: contents`, so every child of the li becomes a grid
+                  item. The role sat outside the card and took a cell of its own.
+                */}
                 <Link
                   className="card"
                   to={`/org/${membership.org.handle}/settings`}
@@ -56,11 +62,13 @@ export function Organization() {
                   <span className="card__desc">
                     <code>{membership.org.handle}</code>
                   </span>
+                  {/* Wrapped, so the badge sizes to its text rather than
+                      stretching across the card as a flex item would. */}
+                  <span>
+                    <span className="badge badge--accent">{membership.role}</span>
+                  </span>
                   <span className="card__more">Open →</span>
                 </Link>
-                <p className="chip-row">
-                  <span className="chip">{membership.role}</span>
-                </p>
               </li>
             ))}
           </ul>
