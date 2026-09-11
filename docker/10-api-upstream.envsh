@@ -1,0 +1,100 @@
+#!/bin/sh
+#
+# Works out where /api goes, and how nginx is to find it.
+#
+# The base image runs everything in /docker-entrypoint.d/ in name order before
+# starting nginx. A `.envsh` file is *sourced* and a `.sh` file is executed in a
+# subshell, so this must be `.envsh` for its exports to survive into
+# 20-envsubst-on-templates.sh, which renders default.conf.template a moment
+# later. It must also be executable, or the entrypoint skips it and says so
+# only in the log.
+set -eu
+
+# ---------------------------------------------------------------------------
+# The resolver
+# ---------------------------------------------------------------------------
+#
+# proxy_pass goes through a variable so a replaced upstream is re-resolved per
+# request instead of being cached until nginx restarts. That is what requires a
+# `resolver` at all -- and nginx does not read /etc/resolv.conf to find one.
+#
+# This used to default to 127.0.0.11, Docker's embedded DNS. That address
+# answers on a Docker or Compose network and nowhere else, so the image was
+# unusable on any other platform in a way that named neither DNS nor the
+# platform: every proxied request ran to resolver_timeout and came back 502
+# while the API was healthy and one hop away.
+#
+# So take the resolver from the same file every other program on the machine
+# uses. RESOLV_CONF is an override the suite sets; nothing sets it in a running
+# container.
+if [ -z "${DNS_RESOLVER:-}" ]; then
+    DNS_RESOLVER=$(
+        awk '$1 == "nameserver" && NF >= 2 {
+                 # nginx wants an IPv6 address in brackets.
+                 print ($2 ~ /:/) ? "[" $2 "]" : $2
+             }' "${RESOLV_CONF:-/etc/resolv.conf}" 2>/dev/null | tr '\n' ' '
+    )
+    DNS_RESOLVER=${DNS_RESOLVER% }
+fi
+
+# Nothing to read and nothing configured: keep the old default rather than
+# refusing to start. It is right in the one environment where resolv.conf is
+# the unusual thing to be missing.
+[ -n "${DNS_RESOLVER}" ] || DNS_RESOLVER=127.0.0.11
+export DNS_RESOLVER
+
+# ---------------------------------------------------------------------------
+# The upstream
+# ---------------------------------------------------------------------------
+#
+# API_UPSTREAM is `host:port`, and may carry a scheme. The scheme is not
+# decoration: a private address is one plaintext hop on a network nobody else
+# is on, while some platforms give a service no private address at all -- a
+# free Render web service can send private traffic but not receive it -- and
+# then the only way to reach it is its public HTTPS URL.
+upstream=${API_UPSTREAM:-server:3000}
+scheme=http
+case "${upstream}" in
+    https://*) scheme=https; upstream=${upstream#https://} ;;
+    http://*)             upstream=${upstream#http://}  ;;
+esac
+
+# A path is not ours to forward: /api/v1/x already carries one.
+upstream=${upstream%%/*}
+
+case "${upstream}" in
+    \[*\]*)                                   # [fd00::1] or [fd00::1]:3000
+        host=${upstream%%\]*}; host=${host#\[}
+        port=${upstream##*\]}; port=${port#:}
+        ;;
+    *:*) host=${upstream%%:*}; port=${upstream##*:} ;;
+    *)   host=${upstream};     port=''              ;;
+esac
+
+if [ -z "${port}" ]; then
+    if [ "${scheme}" = https ]; then port=443; else port=80; fi
+fi
+
+case "${host}" in
+    *:*) API_PROXY_ADDR="[${host}]:${port}" ;;    # an IPv6 literal, re-bracketed
+    *)   API_PROXY_ADDR="${host}:${port}"   ;;
+esac
+
+# Which Host the upstream is asked for.
+#
+# Over plaintext to a private address, forward the browser's own: the hop is
+# ours and the service does not route on it. Over TLS the upstream is a public
+# endpoint whose router picks the service *by* Host -- send the panel's hostname
+# there and it reaches the wrong service, or none. `$host` is written literally
+# for envsubst to leave as an nginx variable.
+if [ "${scheme}" = https ]; then
+    API_PROXY_HOST=${host}
+else
+    API_PROXY_HOST='$host'
+fi
+
+API_PROXY_SCHEME=${scheme}
+API_PROXY_SNI=${host}
+export API_PROXY_SCHEME API_PROXY_ADDR API_PROXY_HOST API_PROXY_SNI
+
+echo "10-api-upstream: /api -> ${API_PROXY_SCHEME}://${API_PROXY_ADDR} (resolver: ${DNS_RESOLVER})"

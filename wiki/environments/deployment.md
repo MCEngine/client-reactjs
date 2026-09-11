@@ -31,8 +31,8 @@ docker run -d --name mcpm-panel \
 
 | Variable | Default | What it does |
 |---|---|---|
-| `API_UPSTREAM` | `server:3000` | Host and port `/api` is proxied to. `host:port` only — a scheme or a path here is a 500 |
-| `DNS_RESOLVER` | `127.0.0.11` | Docker's embedded DNS. Set it to the platform's resolver anywhere that is not a Docker network |
+| `API_UPSTREAM` | `server:3000` | Where `/api` goes. `host:port`, or `https://host` for an API reachable only over TLS |
+| `DNS_RESOLVER` | from `/etc/resolv.conf` | Only set this to override what the machine already knows |
 
 Both are substituted into the nginx configuration when the container starts, so one image runs
 in every environment.
@@ -79,46 +79,91 @@ inheritance rule that silently drops security headers if you write the file the 
 
 ## Setting `API_UPSTREAM`
 
-`API_UPSTREAM` is **`host:port`** — no scheme, no trailing slash, no path. The template does
-`proxy_pass http://$api_upstream`, so whatever you set is pasted after `http://`. The three
-ways to get it wrong all fail differently, and none of them says "your API_UPSTREAM is
-malformed":
+`API_UPSTREAM` is where `/api` goes. `host:port` is the usual form; a scheme is allowed and
+means something specific:
 
-| Value | What happens | In the nginx log |
-|---|---|---|
-| `server:3000` | Works | — |
-| `https://api.example.com` | **500** on every `/api` request | `invalid port in upstream "https://api.example.com"` |
-| `api.example.com:443` | **502** | `recv() failed (104: Connection reset by peer) while reading response header from upstream` |
-| A hostname the resolver cannot answer | **Requests hang**, then time out | nothing for the first 30 seconds |
+| Value | What it does |
+|---|---|
+| `server:3000` | Plaintext to a private address. The Compose default |
+| `api-2j3e:10000` | The same, on a platform that gives services internal names |
+| `https://api.example.com` | TLS to a public endpoint, with SNI, certificate verification, and `Host` set to that hostname |
+| `http://api:10000` | Plaintext, written out. Same as the first form |
 
-The second is the obvious guess and the third is the interesting one: a public HTTPS address
-reached over plaintext. This image proxies **plaintext HTTP to a private address**. It has no
-`proxy_ssl_*` configuration, so it cannot terminate TLS to an upstream — point it at the
-server's private address on the network the two share, not at the server's public URL.
+`docker/10-api-upstream.envsh` works this out at start-up — the scheme, a missing port, a stray
+path, an IPv6 literal — so the template is rendered from values that are already correct rather
+than from whatever was typed.
 
-`DNS_RESOLVER` is the other half of that. `proxy_pass` goes through a variable so names are
-re-resolved per request, and a variable `proxy_pass` requires a `resolver`. The default,
-`127.0.0.11`, is Docker's embedded DNS and exists on a Docker or Compose network. Anywhere
-else it is an address with nothing behind it, and the symptom is the fourth row above: `/api`
-requests that hang while the server is perfectly healthy. Set it to the platform's resolver —
-the first `nameserver` line in `/etc/resolv.conf` inside the running container.
+**The `https://` form exists because some platforms give a service no private address at all.**
+A free Render web service, for instance, can send private network traffic but cannot receive
+it, so its public URL is the only way in. That hop is real internet, so the certificate is
+verified against the base image's CA bundle and SNI is sent; an upstream with a self-signed
+certificate is refused with `upstream SSL certificate verify error` rather than trusted
+quietly.
+
+Two values still fail, and both fail quickly now:
+
+| Value | Result |
+|---|---|
+| `api.example.com:443` | **502** — plaintext into a TLS port. Write `https://api.example.com` |
+| A name DNS cannot answer | **502** in five seconds, `resolver_timeout` |
+
+### The resolver
+
+`proxy_pass` goes through a variable so a replaced upstream is re-resolved per request rather
+than cached until nginx restarts — and nginx does not read `/etc/resolv.conf` to find a
+resolver. The image used to default `DNS_RESOLVER` to `127.0.0.11`, Docker's embedded DNS: an
+address that answers on a Docker or Compose network and on nothing else. Anywhere else every
+proxied request ran to a thirty-second timeout and came back `502` from an API that was healthy
+and one hop away.
+
+The entrypoint now takes the nameservers from `/etc/resolv.conf`, like every other program on
+the machine, and `resolver_timeout` is five seconds rather than thirty. Set `DNS_RESOLVER` only
+to override that — a specific cluster resolver, say. `ipv6=off` stays: these upstreams are
+reached over IPv4, and an AAAA answer nginx cannot route to is a slower failure than no answer.
+
+## On Render
+
+Two services, each built from its repository's Dockerfile. The panel is the one that gets a
+public URL; the server does not need one, though it may have one.
+
+**On the panel service:**
+
+| Variable | Value |
+|---|---|
+| `API_UPSTREAM` | The server's internal address from its **Connect → Internal** menu, with port `10000` — for example `mcengine-server-expressjs:10000` |
+| `VITE_API_BASE_URL` | **Leave it unset.** It is a build argument, and a service variable can reach the image build — [`env.md`](env.md) |
+
+Port `10000` is not a guess: Render routes private traffic on that port to a web service's
+primary HTTP server whatever port it actually binds, so it keeps working if the server's `PORT`
+changes.
+
+**If the server service is on the free plan** it has no private address — free web services can
+send private network requests but not receive them. Use its public URL instead, with the
+scheme, and the proxy terminates TLS to it:
+
+```
+API_UPSTREAM=https://mcengine-server-expressjs.onrender.com
+```
+
+**On the server service**, `JWT_SECRET` is required, a disk mounted at `/data` is what keeps the
+database and the published jars across a redeploy, and `DEMO_ACCOUNT_ENABLED=true` is what makes
+the demo account exist — it is off unless asked for, which is why the sign-in page shows no
+credentials until you set it. That repository's `wiki/environments/env.md` covers all three.
+
+Both services must be in the same region for a private address to resolve.
 
 ## On a platform that builds your Dockerfile for you
 
-Render, Railway, Fly and similar hosts present one "environment variables" panel, and it is
-not one thing. A variable there can reach the **image build** as a build argument as well as
-the running container. That is the trap this section exists for:
+Render, Railway, Fly and similar hosts present one "environment variables" panel, and it is not
+one thing. A variable there can reach the **image build** as a build argument as well as the
+running container:
 
-* **Set `API_UPSTREAM`** to the server service's private `host:port`, and `DNS_RESOLVER` if
-  the platform is not Docker's own network.
+* **Set `API_UPSTREAM`** to the API's address, as above. `DNS_RESOLVER` needs setting only where
+  the platform's resolver is not the one in `/etc/resolv.conf`.
 * **Leave `VITE_API_BASE_URL` unset — including in the dashboard.** It looks like a runtime
-  variable and is not: the build inlines it into the bundle, every request becomes
-  cross-origin, the preflight goes unanswered, and the `HttpOnly` refresh cookie stops being
-  sent. [`env.md`](env.md) has the whole failure, measured.
-
-The panel service is the one that gets a public URL. The server service does not need one —
-nothing but the panel talks to it, and giving it one makes it a second origin for anything a
-browser does.
+  variable and is not: the build inlines it into the bundle, every request becomes cross-origin,
+  the preflight goes unanswered, and the `HttpOnly` refresh cookie stops being sent.
+  [`env.md`](env.md) has the whole failure, measured.
 
 ## Pointing the panel at an API on another origin
 
