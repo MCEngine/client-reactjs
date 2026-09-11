@@ -81,3 +81,12 @@ form* puts `demo@mcengine.local` in the email field.
 
 Next task depends on: nothing. The release is last.
 
+### Task 5 — chore/demo-and-landing-release
+
+The release, in both repositories. Here it wrote this entry and brought `repository-state.md`
+current; the plan table and the `PR` column are in `MCEngine/server-expressjs`.
+
+**The version did not move.**
+
+Next task depends on: nothing. This closes this repository's part of the record.
+
