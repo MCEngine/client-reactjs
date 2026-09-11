@@ -30,6 +30,30 @@ export interface ApiClientOptions {
 
 const NO_BODY = new Set([204, 205, 304]);
 
+/**
+ * The error body for a reply that did not come from the API.
+ *
+ * Every route in the service answers with an envelope, so a failure without one
+ * was written by something in front of it: the panel's own nginx when it cannot
+ * reach the upstream, or the platform's router while the service is starting.
+ * "The server returned 502." is accurate and tells a person nothing they can
+ * act on — and this is the exact failure a misconfigured `API_UPSTREAM`
+ * produces, where the server is healthy and the panel looks broken.
+ */
+function unenvelopedFailure(status: number): ApiErrorBody {
+  if (status === 502 || status === 503 || status === 504) {
+    return {
+      error: {
+        code: 'server_unreachable',
+        message:
+          'The panel could not reach the server. It may be starting up, or the panel may be ' +
+          'pointed at an address it cannot reach — see API_UPSTREAM in the deployment notes.',
+      },
+    };
+  }
+  return { error: { code: 'unexpected_response', message: `The server returned ${status}.` } };
+}
+
 export function createApiClient(options: ApiClientOptions = {}): ApiClient {
   const baseUrl = options.baseUrl ?? '';
   const doFetch = options.fetcher ?? globalThis.fetch.bind(globalThis);
@@ -103,11 +127,11 @@ export function createApiClient(options: ApiClientOptions = {}): ApiClient {
       }
 
       if (!response.ok) {
-        const body =
+        const envelope =
           payload !== undefined && typeof payload === 'object' && payload !== null && 'error' in payload
             ? (payload as ApiErrorBody)
-            : { error: { code: 'unexpected_response', message: `The server returned ${response.status}.` } };
-        throw new ApiError(response.status, body);
+            : undefined;
+        throw new ApiError(response.status, envelope ?? unenvelopedFailure(response.status));
       }
 
       return payload as T;

@@ -95,3 +95,20 @@ scheme is supported — it said "a scheme is a 500" one task ago, which was true
 repository. `"types"` in `tsconfig.json` was deliberately left alone, so `node:child_process`
 resolves as an import while `process` stays undefined as a global: `src/` is browser code and
 must not start believing otherwise.
+
+### Task 3 — fix/gateway-error
+
+`src/api/client.ts` now distinguishes a failure the API wrote from one written in front of it.
+Every route in the service answers with an envelope, so a `502`, `503` or `504` **without** one
+came from the panel's own nginx or the platform's router — and that is exactly the shape a
+wrong `API_UPSTREAM` produces. Those read as "The panel could not reach the server. It may be
+starting up, or the panel may be pointed at an address it cannot reach", instead of "The server
+returned 502."
+
+A `503` that does carry an envelope keeps the service's own message: readiness naming an
+unreachable database is not the proxy failing, and overwriting it would hide the dependency the
+service named.
+
+The existing `client.test.ts` case for a non-envelope body used a `502`, so it failed on this
+change — correctly. It moved to `500`, which is still the case it was written for, and the two
+gateway cases are covered by new tests.
