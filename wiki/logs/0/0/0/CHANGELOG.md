@@ -85,4 +85,17 @@ one that asks.
   its preflight and never sends the cookie. `deployment.md` gained the shape `API_UPSTREAM`
   must take, what each malformed value does, and a warning that a hosting platform's single
   environment panel can feed the image build.
+- **The image could not find its API anywhere but a Docker network.** nginx needs a `resolver`
+  for the variable `proxy_pass`, does not read `/etc/resolv.conf` to get one, and the image
+  defaulted it to `127.0.0.11` — Docker's embedded DNS. On any other platform every `/api`
+  request ran to a thirty-second timeout and returned `502` from an API that was healthy one hop
+  away. `docker/10-api-upstream.envsh` now derives the resolver from `/etc/resolv.conf`,
+  `resolver_timeout` is five seconds, and `API_UPSTREAM` accepts a scheme: `https://host`
+  proxies over TLS with SNI and certificate verification, which is the only way to reach an API
+  whose platform lets it send private traffic but not receive it. `test/docker.test.ts` sources
+  the script the way the base image does, so the whole thing is covered without a Docker daemon.
+- **A `502`, `503` or `504` with no error envelope now reads as the server being unreachable**,
+  naming `API_UPSTREAM`, instead of "The server returned 502." A failure without an envelope was
+  written by the proxy in front of the API rather than by the API; one *with* an envelope keeps
+  the service's own message.
 
