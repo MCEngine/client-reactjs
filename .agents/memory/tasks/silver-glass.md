@@ -44,10 +44,10 @@ Recorded in [`../decisions/design-system-adoption.md`](../decisions/design-syste
 
 | # | Title | Scope | Repository | Branch | Files / areas | PR |
 |---|---|---|---|---|---|---|
-| 1 | Task record | This file, its decision, and the index rows | `client-reactjs` | `chore/silver-glass-plan` | `.agents/memory/`, `.agents/index/` | |
-| 2 | The design system | `.agents/design/`, its index, its `AGENTS.md` row | `client-reactjs` | `docs/design-system` | `.agents/design/`, `.agents/index/`, `AGENTS.md` | |
-| 3 | Apply it to every page | Stylesheets, the shell, the shared components, every route | `client-reactjs` | `feat/panel-design` | `src/styles/`, `src/App.tsx`, `src/components/`, `src/routes/`, `index.html` | |
-| 4 | Release | Logs, this table, the record closed | `client-reactjs` | `chore/silver-glass-release` | `wiki/logs/0/0/0/`, `.agents/` | |
+| 1 | Task record | This file, its decision, and the index rows | `client-reactjs` | `chore/silver-glass-plan` | `.agents/memory/`, `.agents/index/` | MCEngine/client-reactjs#10 |
+| 2 | The design system | `.agents/design/`, its index, its `AGENTS.md` row | `client-reactjs` | `docs/design-system` | `.agents/design/`, `.agents/index/`, `AGENTS.md` | MCEngine/client-reactjs#11 |
+| 3 | Apply it to every page | Stylesheets, the shell, the shared components, every route | `client-reactjs` | `feat/panel-design` | `src/styles/`, `src/App.tsx`, `src/components/`, `src/routes/`, `index.html` | MCEngine/client-reactjs#12 |
+| 4 | Release | Logs, this table, the record closed | `client-reactjs` | `chore/silver-glass-release` | `wiki/logs/0/0/0/`, `.agents/` | MCEngine/client-reactjs#13 |
 
 ## Entries
 
@@ -116,3 +116,19 @@ Verified in Chromium against the built bundle, not just compiled:
 
 Next task depends on: nothing. The release is last.
 
+### Task 4 — chore/silver-glass-release
+
+Filled the `PR` column, wrote this entry, and brought `repository-state.md` current.
+
+**The version did not move.** `0.0.0`, and `wiki/logs/0/0/0/` already existed.
+
+**What this plan changes about writing a page here.** Styling is no longer absent-by-design, so
+"add a page" now means composing it from `.agents/design/`'s vocabulary. The `AGENTS.md` row
+added in task 2 fires on exactly that, and `panel-application.md` carries the six rules a new
+page has to hold to.
+
+Next task depends on: nothing. This closes the record.
+
+## Status
+
+**Done.** All four tasks landed; the table above carries the pull request each merged through.

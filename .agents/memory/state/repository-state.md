@@ -32,10 +32,13 @@ Plus the four `/product/*` pages: `src/routes/product/`.
 to `API_UPSTREAM` — the panel and the API are one origin by design, because the refresh cookie
 is `HttpOnly`. `wiki/environments/deployment.md` has the detail.
 
-**Does not exist:** styling. The markup is semantic and unstyled on purpose, so the look is
-applied to every page at once rather than reinvented per page. No CI workflow; none was
-asked for. No pagination controls, though the API client and the payload types both carry
-cursors.
+**Styled, as of the Silver Glass pass.** `src/styles/{main,layout,components}.css`, imported in
+that order from `main.tsx`. `main.css` is the only file carrying a hex value. The system and the
+six rules a new page must hold to are in `.agents/design/`, which has an `AGENTS.md` row that
+fires on writing anything a person looks at.
+
+**Does not exist:** a CI workflow; none was asked for. No pagination controls, though the API
+client and the payload types both carry cursors.
 
 **The panel is otherwise complete against `wiki/information/api-contract.md`.**
 
@@ -48,19 +51,22 @@ data-fetching library, no component library: the panel holds no state of its own
 twelve-line `useAsync` covers what it needs from a read.
 
 **Verified:** `npm run check` green — `tsc --noEmit` clean and 50 tests across five suites.
-`npm run build` produces a 294.59 kB bundle, 91.57 kB gzipped.
+`npm run build` produces 302.81 kB of JS (92.72 kB gzipped) and 13.03 kB of CSS (3.50 kB
+gzipped). The built bundle was also rendered in Chromium at 1280px and 390px: no page scrolls
+horizontally, and the mobile menu computes to `rgba(255, 255, 255, 0.98)` with
+`backdrop-filter: none`, which is the overlay rule holding rather than being asserted.
 
 ## Next step
 
-**Three plans are finished and all three records are closed**: the twenty-task platform plan
+**Four plans are finished and all four records are closed**: the twenty-task platform plan
 (`../tasks/mcpluginmanager-platform.md`, table in `MCEngine/plugin-manager`), the version-route
 plan (`../tasks/version-route.md`, table in `MCEngine/server-expressjs`), which moved publishing
-to `PUT /api/v1/products/:id/versions/:version`, and the container-image plan
-(`../tasks/container-image.md`, table also in `MCEngine/server-expressjs`). Follow-up work opens
-a new record rather than appending to any of them.
+to `PUT /api/v1/products/:id/versions/:version`, the container-image plan
+(`../tasks/container-image.md`, table also in `MCEngine/server-expressjs`), and the Silver Glass
+plan (`../tasks/silver-glass.md`, table here). Follow-up work opens a new record rather than
+appending to any of them.
 
-The candidates, in the order they matter: styling, which is now one pass over semantic markup
-rather than a retrofit; pagination controls, since the client and the payload types already
+The candidates, in the order they matter: pagination controls, since the client and the payload types already
 carry the cursors; a sign-in through an OAuth provider, once `MCEngine/server-expressjs` has a
 provider redirect to send anyone to; and a CI workflow that builds and pushes the image the
 Dockerfile now defines. A first shipping version is a version claim and therefore asks first.

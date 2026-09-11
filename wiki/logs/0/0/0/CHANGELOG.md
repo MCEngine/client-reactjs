@@ -48,6 +48,13 @@ one that asks.
   rather than addressed directly, what nginx does with each kind of request, and what a
   cross-origin API would cost.
 
+- `src/styles/` and `.agents/design/` — the **Silver Glass** design system: white, silver and
+  transparent, with translucent panels, hairline borders and a fixed silver gradient field. The
+  panel had no styling at all until now, deliberately, so the look could be applied to every
+  page at once. Tokens, layout and components in three stylesheets; the system and the rules a
+  new page must hold to in `.agents/design/`, with an `AGENTS.md` row that fires on writing
+  anything a person looks at.
+
 ## Changed
 
 - **The publish form sends `PUT /api/v1/products/:id/versions/:version`**, with the version in
