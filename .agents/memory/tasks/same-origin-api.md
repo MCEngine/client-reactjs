@@ -61,3 +61,23 @@ variables keep working exactly as they do; they are documented as what they are.
 ### Task 1 — chore/same-origin-api-plan
 
 This record and its row in `.agents/index/memory-index.md`. Nothing else.
+
+### Task 2 — docs/api-origin
+
+`wiki/environments/env.md` rewritten: the variables are now split into build-time and runtime
+tables, with `API_UPSTREAM` and `DNS_RESOLVER` listed here for the first time — the page
+previously held one row, so a reader looking for "the variable that points at the API" found
+only the wrong one.
+
+`wiki/environments/deployment.md` gained *Setting `API_UPSTREAM`* (the shape it must take and
+the three failures, each with its nginx log line) and *On a platform that builds your Dockerfile
+for you*; *Pointing the panel at an API somewhere else* was rewritten from a how-to into what it
+costs. `setup.md` and `.env.example` now say to leave `VITE_API_BASE_URL` empty rather than
+describing when to set it.
+
+`.agents/memory/decisions/same-origin-api.md` records the measurements behind all of it.
+
+Every claim in these pages was measured rather than reasoned: the bundle was built and grepped,
+the server was booted and asked for a preflight, and the nginx template was rendered and run
+against a live upstream for each malformed value. The rendering is worth noting — `envsubst` is
+not installed here, so the first attempt tested an empty config that passed `nginx -t` happily.

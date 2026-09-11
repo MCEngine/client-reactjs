@@ -33,8 +33,11 @@ would make every request cross-site in development and same-site in production â
 difference that shows up only as a cookie the browser silently declines to send. The proxy
 keeps both the same.
 
-`VITE_API_BASE_URL` exists for a deployment where the API is genuinely on another origin.
-Leave it empty for same-origin, which is the default and what the proxy gives you.
+The same is true of a deployment. **Leave `VITE_API_BASE_URL` empty**, in development and in
+production both: it is inlined into the bundle at build time, and a value pointing at another
+origin gets the panel a preflight the server does not answer and a cookie the browser will not
+send. The container image proxies `/api` for exactly this reason â€” see [`env.md`](env.md) and
+[`deployment.md`](deployment.md).
 
 ## Layout
 
