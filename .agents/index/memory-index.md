@@ -37,3 +37,4 @@ protocol's approval gate. See `{shared}/rules/memory-policy.md`.
 | File | Purpose |
 |---|---|
 | [`decisions/design-system-adoption.md`](../memory/decisions/design-system-adoption.md) | Why Silver Glass lives in `.agents/design/`, what a React SPA replaces in its static-site sections, and why no CSS dependency was added. |
+| [`decisions/same-origin-api.md`](../memory/decisions/same-origin-api.md) | Why the panel and the API are one origin, what a cross-origin build actually breaks, and why `VITE_API_BASE_URL` and `API_UPSTREAM` are not interchangeable. |

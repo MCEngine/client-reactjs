@@ -31,8 +31,8 @@ docker run -d --name mcpm-panel \
 
 | Variable | Default | What it does |
 |---|---|---|
-| `API_UPSTREAM` | `server:3000` | Host and port `/api` is proxied to |
-| `DNS_RESOLVER` | `127.0.0.11` | Docker's embedded DNS. Set it to the cluster resolver on Kubernetes |
+| `API_UPSTREAM` | `server:3000` | Host and port `/api` is proxied to. `host:port` only — a scheme or a path here is a 500 |
+| `DNS_RESOLVER` | `127.0.0.11` | Docker's embedded DNS. Set it to the platform's resolver anywhere that is not a Docker network |
 
 Both are substituted into the nginx configuration when the container starts, so one image runs
 in every environment.
@@ -43,10 +43,11 @@ no root anywhere, and an unprivileged process cannot bind a port below 1024.
 ## Why this image proxies the API
 
 The panel's requests are **relative** — `/api/v1/...` — and that is load-bearing rather than
-incidental. The refresh token is an `HttpOnly` cookie the panel cannot read; serving the bundle
-from a different origin than the API would make every request cross-site in production while the
-development proxy keeps it same-site. The symptom is a cookie the browser silently declines to
-send, and a session that will not survive a reload.
+incidental. Serving the bundle from a different origin than the API breaks it twice over: the
+browser asks for permission the server never grants, since the server has no CORS layer at all,
+and the refresh token is an `HttpOnly` cookie issued `SameSite=Lax`, which a browser does not
+attach to a cross-site request. The symptoms are a request that never leaves the browser and a
+session that will not survive a reload. [`env.md`](env.md) shows both, measured.
 
 So nginx serves the bundle *and* forwards `/api` to the server, and the browser only ever talks
 to one origin.
@@ -76,19 +77,65 @@ including errors. They are repeated inside each location that sets a header of i
 nginx gives a location that declares any `add_header` **none** of the enclosing block's — an
 inheritance rule that silently drops security headers if you write the file the obvious way.
 
-## Pointing the panel at an API somewhere else
+## Setting `API_UPSTREAM`
 
-`VITE_API_BASE_URL` is a **build** argument, not a runtime variable: Vite inlines every
-`VITE_`-prefixed value into the bundle.
+`API_UPSTREAM` is **`host:port`** — no scheme, no trailing slash, no path. The template does
+`proxy_pass http://$api_upstream`, so whatever you set is pasted after `http://`. The three
+ways to get it wrong all fail differently, and none of them says "your API_UPSTREAM is
+malformed":
+
+| Value | What happens | In the nginx log |
+|---|---|---|
+| `server:3000` | Works | — |
+| `https://api.example.com` | **500** on every `/api` request | `invalid port in upstream "https://api.example.com"` |
+| `api.example.com:443` | **502** | `recv() failed (104: Connection reset by peer) while reading response header from upstream` |
+| A hostname the resolver cannot answer | **Requests hang**, then time out | nothing for the first 30 seconds |
+
+The second is the obvious guess and the third is the interesting one: a public HTTPS address
+reached over plaintext. This image proxies **plaintext HTTP to a private address**. It has no
+`proxy_ssl_*` configuration, so it cannot terminate TLS to an upstream — point it at the
+server's private address on the network the two share, not at the server's public URL.
+
+`DNS_RESOLVER` is the other half of that. `proxy_pass` goes through a variable so names are
+re-resolved per request, and a variable `proxy_pass` requires a `resolver`. The default,
+`127.0.0.11`, is Docker's embedded DNS and exists on a Docker or Compose network. Anywhere
+else it is an address with nothing behind it, and the symptom is the fourth row above: `/api`
+requests that hang while the server is perfectly healthy. Set it to the platform's resolver —
+the first `nameserver` line in `/etc/resolv.conf` inside the running container.
+
+## On a platform that builds your Dockerfile for you
+
+Render, Railway, Fly and similar hosts present one "environment variables" panel, and it is
+not one thing. A variable there can reach the **image build** as a build argument as well as
+the running container. That is the trap this section exists for:
+
+* **Set `API_UPSTREAM`** to the server service's private `host:port`, and `DNS_RESOLVER` if
+  the platform is not Docker's own network.
+* **Leave `VITE_API_BASE_URL` unset — including in the dashboard.** It looks like a runtime
+  variable and is not: the build inlines it into the bundle, every request becomes
+  cross-origin, the preflight goes unanswered, and the `HttpOnly` refresh cookie stops being
+  sent. [`env.md`](env.md) has the whole failure, measured.
+
+The panel service is the one that gets a public URL. The server service does not need one —
+nothing but the panel talks to it, and giving it one makes it a second origin for anything a
+browser does.
+
+## Pointing the panel at an API on another origin
+
+There is one build argument for it, and it is not the path this image is built for:
 
 ```bash
 docker build --build-arg VITE_API_BASE_URL=https://api.example.com -t mcengine/client-reactjs:0.0.0 .
 ```
 
-Leave it empty unless you have a reason. A cross-origin API means the refresh cookie needs
-`SameSite=None; Secure` and a CORS policy that allows credentials — two more things to get right,
-for no benefit over the proxy above. Nothing secret may be passed here: whatever is inlined ships
-to every browser that loads the page.
+**Do not reach for this to solve a deployment.** The central server has no CORS layer and
+issues its refresh cookie `SameSite=Lax`, so a browser will refuse the preflight and then
+decline to send the cookie. Neither is configurable today — `PANEL_ORIGIN` on the server does
+not do it. The proxy above is not a convenience around that; it is how the panel is meant to
+be served. See [`env.md`](env.md).
+
+Nothing secret may be passed here either: whatever is inlined ships to every browser that
+loads the page.
 
 ## Both halves together
 
