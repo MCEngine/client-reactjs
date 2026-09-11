@@ -84,3 +84,7 @@ simply absent.
 
 Two cases — with a creator, and without — because the second is the one a stale server produces
 and a page that renders "Minted by undefined" would be worse than one that says nothing.
+
+### Task 6 — chore/token-provenance-release
+
+The changelog entries, the state file, and this record. `0.0.0` did not move.
