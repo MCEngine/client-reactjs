@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, NavLink, Navigate, Route, Routes } from 'react-router-dom';
+import { Link, NavLink, Navigate, Route, Routes, useParams } from 'react-router-dom';
 import { useAuth } from './auth/AuthContext.js';
 import { Home } from './routes/Home.js';
 import { Products } from './routes/Products.js';
@@ -11,13 +11,22 @@ import { AccountSettings } from './routes/account/AccountSettings.js';
 import { Devices } from './routes/account/Devices.js';
 import { Tokens } from './routes/account/Tokens.js';
 import { Organization } from './routes/org/Organization.js';
-import { Members } from './routes/org/Members.js';
+import { OrgSettings } from './routes/org/OrgSettings.js';
+import { OrgGeneral } from './routes/org/OrgGeneral.js';
+import { OrgMembers } from './routes/org/OrgMembers.js';
+import { OrgTokens } from './routes/org/OrgTokens.js';
 import { Fleet } from './routes/fleet/Fleet.js';
 import { ProductPage } from './routes/product/ProductPage.js';
 import { ProductSettings } from './routes/product/ProductSettings.js';
 import { ProductUpdate } from './routes/product/ProductUpdate.js';
 import { ProductGeneral } from './routes/product/ProductGeneral.js';
 import { ServerDetail } from './routes/fleet/ServerDetail.js';
+
+/** Keeps `/org/:handle/members` working now that it is a settings page. */
+function MembersRedirect() {
+  const { handle } = useParams<{ handle: string }>();
+  return <Navigate to={`/org/${handle ?? ''}/setting/member`} replace />;
+}
 
 /**
  * The shell.
@@ -195,14 +204,44 @@ export function App() {
           the not-found page.
         */}
         <Route path="/org/new" element={<Navigate to="/org" replace />} />
+        {/*
+          One page per subject, mirroring the product settings shape:
+          `settings` is the landing and `setting/{subject}` is a page.
+        */}
         <Route
-          path="/org/:handle/members"
+          path="/org/:handle/settings"
           element={
             <RequireAuth>
-              <Members />
+              <OrgSettings />
             </RequireAuth>
           }
         />
+        <Route
+          path="/org/:handle/setting/general"
+          element={
+            <RequireAuth>
+              <OrgGeneral />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/org/:handle/setting/member"
+          element={
+            <RequireAuth>
+              <OrgMembers />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/org/:handle/setting/token"
+          element={
+            <RequireAuth>
+              <OrgTokens />
+            </RequireAuth>
+          }
+        />
+        {/* The address the members page had before it became a settings page. */}
+        <Route path="/org/:handle/members" element={<MembersRedirect />} />
 
         <Route
           path="/fleet"

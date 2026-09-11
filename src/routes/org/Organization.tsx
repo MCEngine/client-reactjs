@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext.js';
 import { AsyncBoundary, useAsync } from '../../components/Async.js';
 import { Field, Form } from '../../components/Form.js';
@@ -14,6 +14,7 @@ import type { Account, OrgMembership, Page } from '../../api/types.js';
  */
 export function Organization() {
   const { api } = useAuth();
+  const navigate = useNavigate();
   const memberships = useAsync(
     () => api.request<Page<OrgMembership>>('/api/v1/me/orgs'),
     [api],
@@ -74,17 +75,14 @@ export function Organization() {
         </p>
         <Form
           submitLabel="Create organization"
-          successMessage="Created."
           onSubmit={async () => {
-            await api.request<Account>('/api/v1/orgs', {
+            const org = await api.request<Account>('/api/v1/orgs', {
               method: 'POST',
               body: { handle, displayName },
             });
-            // The list above is the confirmation: the new organization appears
-            // in it, at owner, which is more use than a message saying so.
-            setHandle('');
-            setDisplayName('');
-            memberships.reload();
+            // Straight to its settings: the next thing anyone does with a new
+            // organization is invite somebody or mint a token for it.
+            void navigate(`/org/${org.handle}/settings`);
           }}
         >
           <Field

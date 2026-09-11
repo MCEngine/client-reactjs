@@ -354,6 +354,15 @@ describe('organizations', () => {
       stubFetch({
         ...SIGNED_IN,
         'GET /api/v1/orgs/acme/members': { body: { data: [], next_cursor: null } },
+        'GET /api/v1/accounts/acme': {
+          body: {
+            id: '01ACME',
+            type: 'org',
+            handle: 'acme',
+            display_name: 'Acme',
+            created_at: '2026-02-01T00:00:00.000Z',
+          },
+        },
         'GET /api/v1/orgs/acme/settings': {
           body: {
             membership_tier: 'free',
@@ -365,7 +374,10 @@ describe('organizations', () => {
       }),
     );
 
-    renderWithAuth(<App />, client, '/org/acme/members');
+    // Storage moved to the settings landing when the members page became one
+    // page among several: it is the fact you check before deciding anything,
+    // and it belongs to no single subject.
+    renderWithAuth(<App />, client, '/org/acme/settings');
     expect(await screen.findByText(/5.0 MB of 1.0 GB used on the free tier/)).toBeInTheDocument();
   });
 });

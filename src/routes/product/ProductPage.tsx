@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext.js';
 import { AsyncBoundary, useAsync } from '../../components/Async.js';
-import { formatBytes } from '../org/Members.js';
+import { formatBytes } from '../org/OrgMembers.js';
 import { NotFound } from '../NotFound.js';
 import type { Account, Page, Product, ProductVersion } from '../../api/types.js';
 
@@ -204,7 +204,7 @@ export function ProductPage() {
     if (org.status !== 'ready') return null;
     return (
       <p className="muted">
-        Published by <Link to={`/org/${org.value.handle}/members`}>{org.value.display_name}</Link>
+        Published by <Link to={`/org/${org.value.handle}/settings`}>{org.value.display_name}</Link>
       </p>
     );
   }
