@@ -41,12 +41,12 @@ Two more facts from Render's own documentation shape the rest:
 
 | # | Title | Scope | Repository | Branch | Files / areas | PR |
 |---|---|---|---|---|---|---|
-| 1 | Task record | This file and its index row | `client-reactjs` | `chore/api-proxy-reachability-plan` | `.agents/memory/tasks/`, `.agents/index/memory-index.md` | |
-| 2 | Reach the API from anywhere | Derive the resolver from `/etc/resolv.conf`; accept an `https://` upstream with SNI; fail fast | `client-reactjs` | `fix/api-proxy` | `docker/`, `Dockerfile`, `test/`, `wiki/environments/` | |
-| 3 | Say what a gateway failure is | `502`/`503`/`504` reads as "could not reach the server", not "The server returned 502." | `client-reactjs` | `fix/gateway-error` | `src/api/`, `test/` | |
-| 4 | Release | Changelog, state, close this record | `client-reactjs` | `chore/api-proxy-reachability-release` | `wiki/logs/0/0/0/CHANGELOG.md`, `.agents/memory/state/` | |
-| 5 | Deploying the pair on a host | Render's port rule, and that the demo account is off until asked for | `server-expressjs` | `docs/render-deployment` | `wiki/environments/`, `.agents/memory/` | |
-| 6 | Release | Changelog, state, close the server's record | `server-expressjs` | `chore/api-proxy-reachability-release` | `wiki/logs/0/0/0/CHANGELOG.md`, `.agents/memory/state/` | |
+| 1 | Task record | This file and its index row | `client-reactjs` | `chore/api-proxy-reachability-plan` | `.agents/memory/tasks/`, `.agents/index/memory-index.md` | MCEngine/client-reactjs#23 |
+| 2 | Reach the API from anywhere | Derive the resolver from `/etc/resolv.conf`; accept an `https://` upstream with SNI; fail fast | `client-reactjs` | `fix/api-proxy` | `docker/`, `Dockerfile`, `test/`, `wiki/environments/` | MCEngine/client-reactjs#24 |
+| 3 | Say what a gateway failure is | `502`/`503`/`504` reads as "could not reach the server", not "The server returned 502." | `client-reactjs` | `fix/gateway-error` | `src/api/`, `test/` | MCEngine/client-reactjs#25 |
+| 4 | Release | Changelog, state, close this record | `client-reactjs` | `chore/api-proxy-reachability-release` | `wiki/logs/0/0/0/CHANGELOG.md`, `.agents/memory/state/` | MCEngine/client-reactjs#26 |
+| 5 | Deploying the pair on a host | Render's port rule, and that the demo account is off until asked for | `server-expressjs` | `docs/render-deployment` | `wiki/environments/`, `.agents/memory/` | MCEngine/server-expressjs#32 |
+| 6 | Release | Changelog, state, close the server's record | `server-expressjs` | `chore/api-proxy-reachability-release` | `wiki/logs/0/0/0/CHANGELOG.md`, `.agents/memory/state/` | MCEngine/server-expressjs#33 |
 
 Tasks 1–4 stack in this repository; 5–6 stack in `MCEngine/server-expressjs` and are ordered
 after them.
@@ -116,3 +116,10 @@ gateway cases are covered by new tests.
 ### Task 4 — chore/api-proxy-reachability-release
 
 The changelog entries, the state file, and this record. `0.0.0` did not move.
+
+## Closed
+
+All six merged in order: `MCEngine/client-reactjs#23`, `#24`, `#25`, `#26`, then
+`MCEngine/server-expressjs#32`, `#33`. The image finds its upstream from `/etc/resolv.conf`,
+reaches a TLS-only API when that is the only address there is, and says so in seconds rather
+than thirty when it cannot.
