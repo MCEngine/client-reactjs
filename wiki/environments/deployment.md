@@ -100,12 +100,42 @@ verified against the base image's CA bundle and SNI is sent; an upstream with a 
 certificate is refused with `upstream SSL certificate verify error` rather than trusted
 quietly.
 
-Two values still fail, and both fail quickly now:
+**A public address needs the scheme.** Without one it is port 80, plaintext, and a public edge
+answers plaintext with a redirect to https. The container says so at start-up when it sees a
+dotted name over plaintext:
+
+```
+10-api-upstream: warning: api.example.com is reached over plaintext HTTP. A public endpoint
+will answer that with a redirect to https; write API_UPSTREAM=https://api.example.com for one.
+```
+
+Three values still fail, and all three fail in a way that names itself:
 
 | Value | Result |
 |---|---|
+| `api.example.com` (public, no scheme) | **502** `upstream_redirected`, and the panel shows the message |
 | `api.example.com:443` | **502** — plaintext into a TLS port. Write `https://api.example.com` |
 | A name DNS cannot answer | **502** in five seconds, `resolver_timeout` |
+
+### Why a redirect is refused rather than forwarded
+
+The API issues no redirects, so one came from something in front of it. Both of the obvious
+things to do with it are wrong: passing it to the browser sends it off-origin, where the
+`HttpOnly` refresh cookie will not follow, and rewriting it into this origin sends the browser
+back to the URL it just asked for — a loop it can only give up on with `ERR_TOO_MANY_REDIRECTS`.
+
+The proxy answers `502` with the service's own error envelope instead, so the reason arrives
+where a person is already looking:
+
+```json
+{"error":{"code":"upstream_redirected","message":"The API redirected the panel's proxy. …"}}
+```
+
+**`Host` is the upstream's own**, not the browser's, which is nginx's default and is the reason
+this is a failure rather than a loop: an edge builds its redirect from the `Host` it receives,
+and the browser's points back here. `X-Forwarded-Host` carries the browser's hostname, and
+`X-Forwarded-Proto` carries the scheme the *browser* used rather than the plaintext one this
+container is addressed with behind a TLS-terminating platform.
 
 ### The resolver
 
@@ -130,7 +160,7 @@ public URL; the server does not need one, though it may have one.
 
 | Variable | Value |
 |---|---|
-| `API_UPSTREAM` | The server's internal address from its **Connect → Internal** menu, with port `10000` — for example `mcengine-server-expressjs:10000` |
+| `API_UPSTREAM` | The server's internal address from its **Connect → Internal** menu, with port `10000` — for example `mcengine-server-expressjs:10000`. A **public** hostname needs `https://` in front of it, or it is port 80 and the edge bounces it |
 | `VITE_API_BASE_URL` | **Leave it unset.** It is a build argument, and a service variable can reach the image build — [`env.md`](env.md) |
 
 Port `10000` is not a guess: Render routes private traffic on that port to a web service's

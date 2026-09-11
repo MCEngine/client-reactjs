@@ -80,21 +80,47 @@ case "${host}" in
     *)   API_PROXY_ADDR="${host}:${port}"   ;;
 esac
 
-# Which Host the upstream is asked for.
+# Which Host the upstream is asked for: its own, always.
 #
-# Over plaintext to a private address, forward the browser's own: the hop is
-# ours and the service does not route on it. Over TLS the upstream is a public
-# endpoint whose router picks the service *by* Host -- send the panel's hostname
-# there and it reaches the wrong service, or none. `$host` is written literally
-# for envsubst to leave as an nginx variable.
-if [ "${scheme}" = https ]; then
+# This used to forward the browser's Host on a plaintext upstream, on the
+# reasoning that a private hop does not route on it. That reasoning held right
+# up until API_UPSTREAM named a *public* host over plaintext, where the edge
+# answers `301 https://<the Host it was sent><path>` -- the panel's own URL. The
+# browser followed it back to the panel, which proxied again, forever.
+#
+# nginx's own default is `Host: $proxy_host` and it is the default for this
+# reason. The browser's hostname is still forwarded, as X-Forwarded-Host, where
+# nothing routes on it.
+#
+# The port is included only when it is not the scheme's own, which keeps
+# `Host: api.example.com` for the public case where a `:443` would be unusual.
+if { [ "${scheme}" = http ] && [ "${port}" = 80 ]; } ||
+   { [ "${scheme}" = https ] && [ "${port}" = 443 ]; }; then
     API_PROXY_HOST=${host}
 else
-    API_PROXY_HOST='$host'
+    case "${host}" in
+        *:*) API_PROXY_HOST="[${host}]:${port}" ;;
+        *)   API_PROXY_HOST="${host}:${port}"   ;;
+    esac
 fi
 
 API_PROXY_SCHEME=${scheme}
 API_PROXY_SNI=${host}
 export API_PROXY_SCHEME API_PROXY_ADDR API_PROXY_HOST API_PROXY_SNI
 
-echo "10-api-upstream: /api -> ${API_PROXY_SCHEME}://${API_PROXY_ADDR} (resolver: ${DNS_RESOLVER})"
+echo "10-api-upstream: /api -> ${API_PROXY_SCHEME}://${API_PROXY_ADDR} (Host: ${API_PROXY_HOST}, resolver: ${DNS_RESOLVER})"
+
+# A dotted name over plaintext is usually a public endpoint that has been given
+# no scheme, and a public endpoint answers port 80 with a redirect to https.
+# Said here because the alternative is finding out from the browser.
+case "${API_PROXY_SCHEME}:${host}" in
+    http:*.*)
+        case "${host}" in
+            *[!0-9.]*)
+                echo "10-api-upstream: warning: ${host} is reached over plaintext HTTP." \
+                     "A public endpoint will answer that with a redirect to https;" \
+                     "write API_UPSTREAM=https://${host} for one."
+                ;;
+        esac
+        ;;
+esac
