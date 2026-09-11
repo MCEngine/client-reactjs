@@ -22,6 +22,7 @@ dropping an override updates the override table below in the same commit.
 | [`project-wiki-index.md`](project-wiki-index.md) | `wiki/` human documentation | You need to read or write documentation a person will read. |
 | [`memory-index.md`](memory-index.md) | `.agents/memory/` dynamic state | You need prior task state, a recorded decision, or must record progress. |
 | [`logs-index.md`](logs-index.md) | `wiki/logs/` versioned change logs | You need release history or must record a change. |
+| [`design-index.md`](design-index.md) | `.agents/design/` the design system | You are about to write or change anything a person looks at. |
 
 ## Shared overrides
 

@@ -107,6 +107,7 @@ no `model_name` column. Add the row in the same commit as the first one it gains
 | When you are about to… | Load and obey |
 |---|---|
 | Need project facts, commands, or orientation | [`.agents/wiki/context/repository-map.md`](.agents/wiki/context/repository-map.md) |
+| Write or change anything a person looks at — a page, a component, a stylesheet | [`.agents/design/silver-glass.md`](.agents/design/silver-glass.md), then [`.agents/design/panel-application.md`](.agents/design/panel-application.md) |
 | Do anything at all in this project | [`.agents/rules/repository.md`](.agents/rules/repository.md) |
 
 Local instruction files are added under `.agents/{folder}/{file}.md` through the discovery
