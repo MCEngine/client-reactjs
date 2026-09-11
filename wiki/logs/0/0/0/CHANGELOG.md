@@ -39,6 +39,15 @@ one that asks.
   input and the remaining quota; and `/product/:product_id/setting/general/` with the
   thirty-day id cooldown and a delete that asks for the id and then sends it.
 
+- `Dockerfile`, `docker/default.conf.template` and `.dockerignore` — a two-stage image that
+  typechecks and bundles with Node, then serves the result from
+  `nginxinc/nginx-unprivileged` on port 8080 with no Node in the runtime at all. nginx serves
+  the bundle **and** proxies `/api` to the server, because the panel's requests are relative and
+  its refresh cookie depends on one origin; the upstream is set per container.
+- `wiki/environments/deployment.md` — building and running the image, why the API is proxied
+  rather than addressed directly, what nginx does with each kind of request, and what a
+  cross-origin API would cost.
+
 ## Changed
 
 - **The publish form sends `PUT /api/v1/products/:id/versions/:version`**, with the version in

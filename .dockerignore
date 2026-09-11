@@ -1,0 +1,25 @@
+# Everything the build does not need. Without this the whole working tree is
+# build context: .env reaches the daemon, and node_modules is uploaded only for
+# `npm ci` to discard it.
+
+.git
+.gitignore
+.github
+
+node_modules
+dist
+coverage
+
+.env
+.env.*
+!.env.example
+
+.agents
+wiki
+README.md
+LICENSE
+
+test
+
+Dockerfile
+.dockerignore
