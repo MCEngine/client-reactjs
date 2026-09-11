@@ -38,6 +38,13 @@ export interface Session {
   ip_last_seen?: string;
 }
 
+/** A membership as the member sees it, from `GET /me/orgs`. */
+export interface OrgMembership {
+  role: 'owner' | 'admin' | 'maintainer' | 'member';
+  joined_at: string;
+  org: Account;
+}
+
 export interface OrgMember {
   role: 'owner' | 'admin' | 'maintainer' | 'member';
   joined_at: string;

@@ -117,7 +117,7 @@ export function Home() {
                 jar.
               </p>
               <div className="btn-row">
-                <Link className="btn" to="/org/new">
+                <Link className="btn" to="/org">
                   Create an organization
                 </Link>
               </div>

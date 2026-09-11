@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, NavLink, Route, Routes } from 'react-router-dom';
+import { Link, NavLink, Navigate, Route, Routes } from 'react-router-dom';
 import { useAuth } from './auth/AuthContext.js';
 import { Home } from './routes/Home.js';
 import { Products } from './routes/Products.js';
@@ -10,7 +10,7 @@ import { Register } from './routes/account/Register.js';
 import { AccountSettings } from './routes/account/AccountSettings.js';
 import { Devices } from './routes/account/Devices.js';
 import { Tokens } from './routes/account/Tokens.js';
-import { CreateOrg } from './routes/org/CreateOrg.js';
+import { Organization } from './routes/org/Organization.js';
 import { Members } from './routes/org/Members.js';
 import { Fleet } from './routes/fleet/Fleet.js';
 import { ProductPage } from './routes/product/ProductPage.js';
@@ -88,15 +88,11 @@ export function App() {
                   Servers
                 </NavLink>
                 {/*
-                  Named for the page it opens, not "Organizations". There is no
-                  list to open: no endpoint answers which organizations an
-                  account belongs to, so every other org page needs a handle
-                  already known. Signed-in only, because the route is behind
-                  RequireAuth and a link that bounces to sign-in is worse than
-                  no link.
+                  Signed-in only, because the route is behind RequireAuth and a
+                  link that bounces to sign-in is worse than no link.
                 */}
-                <NavLink className={navLink} to="/org/new" onClick={close}>
-                  New organization
+                <NavLink className={navLink} to="/org" onClick={close}>
+                  Organization
                 </NavLink>
                 <NavLink className={navLink} to="/settings/tokens" onClick={close}>
                   Tokens
@@ -186,13 +182,19 @@ export function App() {
         />
 
         <Route
-          path="/org/new"
+          path="/org"
           element={
             <RequireAuth>
-              <CreateOrg />
+              <Organization />
             </RequireAuth>
           }
         />
+        {/*
+          The create form moved onto /org. This keeps the address that was
+          published on the landing page working rather than answering it with
+          the not-found page.
+        */}
+        <Route path="/org/new" element={<Navigate to="/org" replace />} />
         <Route
           path="/org/:handle/members"
           element={
