@@ -36,6 +36,7 @@ protocol's approval gate. See `{shared}/rules/memory-policy.md`.
 | [`tasks/org-nav.md`](../memory/tasks/org-nav.md) | A nav entry for the organization page, and why it points at the create page rather than a list: the confirmed three-task plan. |
 | [`tasks/org-management.md`](../memory/tasks/org-management.md) | This repository's entries in the organization management plan. The plan table itself lives in `MCEngine/server-expressjs`. |
 | [`tasks/token-provenance.md`](../memory/tasks/token-provenance.md) | The role chip escaping its card, and an organization token whose creator is recorded but reaches nobody: the confirmed six-task plan. |
+| [`tasks/news-and-pages.md`](../memory/tasks/news-and-pages.md) | This repository's entries in the news and reference pages plan. The plan table itself lives in `MCEngine/server-expressjs`. |
 
 ## Decisions
 
