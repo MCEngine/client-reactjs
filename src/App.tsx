@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, NavLink, Route, Routes } from 'react-router-dom';
 import { useAuth } from './auth/AuthContext.js';
 import { Home } from './routes/Home.js';
+import { Products } from './routes/Products.js';
 import { NotFound } from './routes/NotFound.js';
 import { RequireAuth } from './routes/RequireAuth.js';
 import { SignIn } from './routes/account/SignIn.js';
@@ -63,6 +64,9 @@ export function App() {
             id="nav-links"
           >
             <NavLink className={navLink} to="/" end onClick={close}>
+              Home
+            </NavLink>
+            <NavLink className={navLink} to="/products" onClick={close}>
               Products
             </NavLink>
 
@@ -110,6 +114,7 @@ export function App() {
 
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/products" element={<Products />} />
         <Route path="/login" element={<SignIn />} />
         <Route path="/register" element={<Register />} />
 
