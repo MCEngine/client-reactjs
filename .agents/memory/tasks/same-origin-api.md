@@ -43,11 +43,11 @@ the documentation now says so in both repositories.
 
 | # | Title | Scope | Repository | Branch | Files / areas | PR |
 |---|---|---|---|---|---|---|
-| 1 | Task record | This file and its index row | `client-reactjs` | `chore/same-origin-api-plan` | `.agents/memory/tasks/`, `.agents/index/memory-index.md` | |
-| 2 | The two variables, stated plainly | `VITE_API_BASE_URL` is build-time and cross-origin; `API_UPSTREAM` is the runtime one to set | `client-reactjs` | `docs/api-origin` | `wiki/environments/{env,deployment,setup}.md`, `.env.example`, `.agents/memory/decisions/` | |
-| 3 | Release | Changelog, state, close this record | `client-reactjs` | `chore/same-origin-api-release` | `wiki/logs/0/0/0/CHANGELOG.md`, `.agents/memory/state/` | |
-| 4 | `PANEL_ORIGIN` does not configure CORS | Correct the false claim in the server's docs and in the config comment | `server-expressjs` | `docs/panel-origin` | `wiki/environments/{env,deployment}.md`, `src/config.ts`, `.agents/memory/` | |
-| 5 | Release | Changelog, state, close the server's record | `server-expressjs` | `chore/same-origin-api-release` | `wiki/logs/0/0/0/CHANGELOG.md`, `.agents/memory/state/` | |
+| 1 | Task record | This file and its index row | `client-reactjs` | `chore/same-origin-api-plan` | `.agents/memory/tasks/`, `.agents/index/memory-index.md` | MCEngine/client-reactjs#20 |
+| 2 | The two variables, stated plainly | `VITE_API_BASE_URL` is build-time and cross-origin; `API_UPSTREAM` is the runtime one to set | `client-reactjs` | `docs/api-origin` | `wiki/environments/{env,deployment,setup}.md`, `.env.example`, `.agents/memory/decisions/` | MCEngine/client-reactjs#21 |
+| 3 | Release | Changelog, state, close this record | `client-reactjs` | `chore/same-origin-api-release` | `wiki/logs/0/0/0/CHANGELOG.md`, `.agents/memory/state/` | MCEngine/client-reactjs#22 |
+| 4 | `PANEL_ORIGIN` does not configure CORS | Correct the false claim in the server's docs and in the config comment | `server-expressjs` | `docs/panel-origin` | `wiki/environments/{env,deployment}.md`, `src/config.ts`, `.agents/memory/` | MCEngine/server-expressjs#30 |
+| 5 | Release | Changelog, state, close the server's record | `server-expressjs` | `chore/same-origin-api-release` | `wiki/logs/0/0/0/CHANGELOG.md`, `.agents/memory/state/` | MCEngine/server-expressjs#31 |
 
 Tasks 1–3 stack in this repository. Tasks 4–5 stack in `MCEngine/server-expressjs` and are
 ordered after them rather than stacked on them, since branches cannot stack across
@@ -81,3 +81,16 @@ Every claim in these pages was measured rather than reasoned: the bundle was bui
 the server was booted and asked for a preflight, and the nginx template was rendered and run
 against a live upstream for each malformed value. The rendering is worth noting — `envsubst` is
 not installed here, so the first attempt tested an empty config that passed `nginx -t` happily.
+
+### Task 3 — chore/same-origin-api-release
+
+The changelog entry, the state file, and this record. `0.0.0` did not move: nothing shipped, and
+a documentation correction is not a release of its own — it is recorded under the version that
+carries the documentation it corrects.
+
+## Closed
+
+All five merged in order: `MCEngine/client-reactjs#20`, `#21`, `#22`, then
+`MCEngine/server-expressjs#30`, `#31`. Both repositories now say the same true thing about one
+origin, and neither `VITE_API_BASE_URL` nor `PANEL_ORIGIN` is documented as a way to put the
+panel and the API on different ones.
