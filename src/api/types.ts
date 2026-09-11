@@ -64,6 +64,14 @@ export interface ApiToken {
   prefix: string;
   scopes: string[];
   created_at: string;
+  /**
+   * Who minted it.
+   *
+   * The one that matters belongs to an organization: such a token acts *as* the
+   * organization, so this is the only thing that still says which admin made
+   * it.
+   */
+  created_by?: Pick<Account, 'id' | 'handle' | 'display_name'>;
   expires_at?: string;
   last_used_at?: string;
   /** Present only in the response that creates it. Never again. */
