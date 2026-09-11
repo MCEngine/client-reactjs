@@ -1,0 +1,47 @@
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../auth/AuthContext.js';
+import { Field, Form } from '../../components/Form.js';
+
+export function Register() {
+  const { register } = useAuth();
+  const navigate = useNavigate();
+  const [handle, setHandle] = useState('');
+  const [displayName, setDisplayName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  return (
+    <main>
+      <h1>Create an account</h1>
+      <Form
+        submitLabel="Create account"
+        onSubmit={async () => {
+          await register({ handle, displayName, email, password });
+          void navigate('/');
+        }}
+      >
+        <Field
+          label="Handle"
+          value={handle}
+          onChange={(v) => setHandle(v.toLowerCase())}
+          required
+          hint="Lowercase letters, digits and hyphens. Users and organizations share one namespace, so this is yours alone."
+        />
+        <Field label="Display name" value={displayName} onChange={setDisplayName} required />
+        <Field label="Email" type="email" value={email} onChange={setEmail} required />
+        <Field
+          label="Password"
+          type="password"
+          value={password}
+          onChange={setPassword}
+          required
+          hint="At least twelve characters. Length beats punctuation."
+        />
+      </Form>
+      <p>
+        Already have one? <Link to="/login">Sign in</Link>.
+      </p>
+    </main>
+  );
+}

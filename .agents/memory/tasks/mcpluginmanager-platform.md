@@ -95,3 +95,39 @@ Verified: `npm run check` green, 22 tests across three suites; `npm run build` p
 
 Next task depends on: `useAuth`, `ConfirmButton` and the stubbed transport in
 `test/helpers.tsx`.
+
+### Task 16 — feat/account
+
+Sign in and register, account settings with the handle cooldown, email addresses, signed-in
+devices, API tokens, organizations and their members, and the fleet view.
+
+**Every rule shown here belongs to the server; the panel only explains it.** Three places
+make that visible: the handle cooldown renders the `available_at` the server put in the error
+details rather than computing thirty days locally; "make primary" is disabled with a `title`
+saying why for an unverified address, while the server refuses it regardless; and the invite
+form does not offer `owner` at all, because ownership moves by transfer. A second
+implementation of any of those would eventually disagree with the server, and the browser
+would be the copy that is wrong.
+
+**`RequireAuth` is a convenience, not a guard**, and says so where it lives. Anyone can ask
+for the data directly; the guard is the server's.
+
+**Every write goes through `Form`**, which submits once at a time and renders the failure. An
+`onClick` that fires a promise nobody catches looks to a person exactly like a button that
+does nothing.
+
+**Two secrets are each shown exactly once and never stored**: a minted API token and a newly
+registered server's key. Both come with a dismiss button, and dismissing removes the only copy
+the panel ever had.
+
+**Two test failures were my own bugs, both worth keeping the fix for.** `Handle` was both a
+heading and a field label on the same page, which is ambiguous for a screen reader as well as
+for a query — the field is now "New handle". And a confirm button labelled `Revoke` cannot be
+found by the name `Confirm`; the test now queries inside the group the component opens, which
+is what a person navigating by landmark would do too.
+
+Verified: `npm run check` green, 34 tests across four suites, 12 of them new; `npm run build`
+produces a 285 kB bundle, 89 kB gzipped.
+
+Next task depends on: `ConfirmButton`, `Form` and `CooldownNotice`, all of which the product
+settings pages reuse.
