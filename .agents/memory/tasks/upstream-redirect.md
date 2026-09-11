@@ -52,9 +52,9 @@ which is right for a private hop and wrong for anything that routes on Host. A w
 
 | # | Title | Scope | Repository | Branch | Files / areas | PR |
 |---|---|---|---|---|---|---|
-| 1 | Task record | This file and its index row | `client-reactjs` | `chore/upstream-redirect-plan` | `.agents/memory/tasks/`, `.agents/index/memory-index.md` | |
-| 2 | Address the upstream as itself | `Host` is the upstream's; a redirect from it is reported, not followed; forwarded scheme stops lying | `client-reactjs` | `fix/upstream-host` | `docker/`, `test/docker.test.ts`, `wiki/environments/` | |
-| 3 | Release | Changelog, state, close this record | `client-reactjs` | `chore/upstream-redirect-release` | `wiki/logs/0/0/0/CHANGELOG.md`, `.agents/memory/state/` | |
+| 1 | Task record | This file and its index row | `client-reactjs` | `chore/upstream-redirect-plan` | `.agents/memory/tasks/`, `.agents/index/memory-index.md` | MCEngine/client-reactjs#27 |
+| 2 | Address the upstream as itself | `Host` is the upstream's; a redirect from it is reported, not followed; forwarded scheme stops lying | `client-reactjs` | `fix/upstream-host` | `docker/`, `test/docker.test.ts`, `wiki/environments/` | MCEngine/client-reactjs#28 |
+| 3 | Release | Changelog, state, close this record | `client-reactjs` | `chore/upstream-redirect-release` | `wiki/logs/0/0/0/CHANGELOG.md`, `.agents/memory/state/` | MCEngine/client-reactjs#29 |
 
 One repository this time: `MCEngine/server-expressjs` is not involved. Its only part in this is
 the demo account, which is off — `GET /api/v1/meta` there answers `{"demo_account":null}`, which
@@ -92,3 +92,9 @@ sends `Host: $host`, which is the line that turned a wrong variable into a loop.
 ### Task 3 — chore/upstream-redirect-release
 
 The changelog entry, the state file, and this record. `0.0.0` did not move.
+
+## Closed
+
+All three merged in order: `MCEngine/client-reactjs#27`, `#28`, `#29`. The proxy asks the
+upstream for its own `Host`, and an upstream redirect is answered rather than forwarded — so a
+public address written without a scheme is now a `502` naming itself instead of a browser loop.
