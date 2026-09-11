@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext.js';
 import { AsyncBoundary, useAsync } from '../../components/Async.js';
 import { Field, Form } from '../../components/Form.js';
-import { formatBytes } from '../org/Members.js';
+import { formatBytes } from '../org/OrgMembers.js';
 import { NotFound } from '../NotFound.js';
 import type { OrgSettings, Product } from '../../api/types.js';
 

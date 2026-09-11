@@ -1,15 +1,16 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext.js';
 import { AsyncBoundary, useAsync } from '../../components/Async.js';
 import { Field, Form } from '../../components/Form.js';
 import { ConfirmButton } from '../../components/ConfirmButton.js';
 import { NotFound } from '../NotFound.js';
-import type { OrgMember, OrgSettings, Page } from '../../api/types.js';
+import type { OrgMember, Page } from '../../api/types.js';
 
 const ROLES = ['admin', 'maintainer', 'member'] as const;
 
-export function Members() {
+/** `/org/:handle/setting/member/` — who is in the organization, and what they may do. */
+export function OrgMembers() {
   const { api } = useAuth();
   const { handle } = useParams<{ handle: string }>();
   const [invite, setInvite] = useState('');
@@ -19,33 +20,28 @@ export function Members() {
     () => api.request<Page<OrgMember>>(`/api/v1/orgs/${handle}/members`),
     [api, handle],
   );
-  const settings = useAsync(
-    () => api.request<OrgSettings>(`/api/v1/orgs/${handle}/settings`),
-    [api, handle],
-  );
 
   if (handle === undefined) return <NotFound />;
 
   return (
     <main className="container">
-      <p className="eyebrow">Organization</p>
-      <h1>{handle}</h1>
+      <nav className="breadcrumbs" aria-label="Breadcrumb">
+        <Link to="/org">Organization</Link>
+        <span className="sep" aria-hidden="true">
+          /
+        </span>
+        <Link to={`/org/${handle}/settings`}>{handle}</Link>
+        <span className="sep" aria-hidden="true">
+          /
+        </span>
+        <span>Members</span>
+      </nav>
 
-      <section className="panel" aria-labelledby="usage-heading">
-        <h2 id="usage-heading">Storage</h2>
-        <AsyncBoundary state={settings}>
-          {(value) => (
-            <p>
-              {formatBytes(value.storage_used_bytes)} of {formatBytes(value.storage_quota_bytes)}{' '}
-              used on the {value.membership_tier} tier. Largest single file:{' '}
-              {formatBytes(value.max_file_bytes)}.
-            </p>
-          )}
-        </AsyncBoundary>
-      </section>
+      <p className="eyebrow">Organization</p>
+      <h1>Members</h1>
 
       <section className="panel" aria-labelledby="members-heading">
-        <h2 id="members-heading">Members</h2>
+        <h2 id="members-heading">Who is in {handle}</h2>
         <AsyncBoundary state={members}>
           {(page) => (
             <ul className="stack">

@@ -64,18 +64,22 @@ describe('the organization page', () => {
     expect(screen.getByRole('button', { name: 'Create organization' })).toBeInTheDocument();
   });
 
-  it('creates one and shows it in the list', async () => {
+  it('creates one and opens its settings', async () => {
     const onCall = vi.fn();
     const client = testClient(
       stubFetch({
         ...SIGNED_IN,
-        // Empty first, then carrying the new one: the page re-reads after
-        // creating rather than believing what it just sent.
-        'GET /api/v1/me/orgs': [
-          { body: { data: [], next_cursor: null } },
-          { body: { data: [ACME], next_cursor: null } },
-        ],
+        'GET /api/v1/me/orgs': { body: { data: [], next_cursor: null } },
         'POST /api/v1/orgs': { status: 201, body: ACME.org, onCall },
+        'GET /api/v1/accounts/acme': { body: ACME.org },
+        'GET /api/v1/orgs/acme/settings': {
+          body: {
+            membership_tier: 'free',
+            storage_quota_bytes: 1024,
+            storage_used_bytes: 0,
+            max_file_bytes: 512,
+          },
+        },
       }),
     );
 
@@ -91,7 +95,11 @@ describe('the organization page', () => {
       displayName: 'Acme',
     });
 
-    expect(await screen.findByRole('link', { name: 'Acme settings' })).toBeInTheDocument();
+    // Not back to the list: the next thing anyone does with a new organization
+    // is invite somebody or mint a token for it.
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Acme settings' }),
+    ).toBeInTheDocument();
   });
 
   it('keeps the old create address working', async () => {
