@@ -46,9 +46,9 @@ here so the next session treats it as a candidate rather than an oversight.
 
 | # | Title | Scope | Repository | Branch | Files / areas | PR |
 |---|---|---|---|---|---|---|
-| 1 | Task record | This file and its index row | `client-reactjs` | `chore/version-picker-plan` | `.agents/memory/`, `.agents/index/` | |
-| 2 | Pick a version from a dropdown | The picker, and the tests that change with it | `client-reactjs` | `feat/version-picker` | `src/routes/product/ProductPage.tsx`, `test/` | |
-| 3 | Release | Logs, this table, the record closed | `client-reactjs` | `chore/version-picker-release` | `wiki/logs/0/0/0/`, `.agents/` | |
+| 1 | Task record | This file and its index row | `client-reactjs` | `chore/version-picker-plan` | `.agents/memory/`, `.agents/index/` | MCEngine/client-reactjs#14 |
+| 2 | Pick a version from a dropdown | The picker, and the tests that change with it | `client-reactjs` | `feat/version-picker` | `src/routes/product/ProductPage.tsx`, `test/` | MCEngine/client-reactjs#15 |
+| 3 | Release | Logs, this table, the record closed | `client-reactjs` | `chore/version-picker-release` | `wiki/logs/0/0/0/`, `.agents/` | MCEngine/client-reactjs#16 |
 
 ## Entries
 
@@ -112,3 +112,18 @@ render in exactly as much space as two.
 
 Next task depends on: nothing. The release closes the record.
 
+### Task 3 — chore/version-picker-release
+
+Filled the `PR` column, wrote this entry, and brought `repository-state.md` current.
+
+**The version did not move.** `0.0.0`, and `wiki/logs/0/0/0/` already existed.
+
+**Still open, and named in task 1 rather than discovered here:** a version is not linkable. A
+`?version=` query parameter would make one shareable, which is a real want — but it is a new URL
+surface on a public page and was not what this task was for.
+
+Next task depends on: nothing. This closes the record.
+
+## Status
+
+**Done.** All three tasks landed; the table above carries the pull request each merged through.
