@@ -34,9 +34,9 @@ recorded here as the follow-up rather than guessed at.
 
 | # | Title | Scope | Repository | Branch | Files / areas | PR |
 |---|---|---|---|---|---|---|
-| 1 | Task record | This file and its index row | `client-reactjs` | `chore/org-nav-plan` | `.agents/memory/tasks/`, `.agents/index/memory-index.md` | |
-| 2 | The nav entry | A signed-in nav link to `/org/new`, and a test that it is signed-in only | `client-reactjs` | `feat/org-nav` | `src/App.tsx`, `test/auth.test.tsx` | |
-| 3 | Release | Changelog, state, close this record | `client-reactjs` | `chore/org-nav-release` | `wiki/logs/0/0/0/CHANGELOG.md`, `.agents/memory/state/` | |
+| 1 | Task record | This file and its index row | `client-reactjs` | `chore/org-nav-plan` | `.agents/memory/tasks/`, `.agents/index/memory-index.md` | MCEngine/client-reactjs#30 |
+| 2 | The nav entry | A signed-in nav link to `/org/new`, and a test that it is signed-in only | `client-reactjs` | `feat/org-nav` | `src/App.tsx`, `test/auth.test.tsx` | MCEngine/client-reactjs#31 |
+| 3 | Release | Changelog, state, close this record | `client-reactjs` | `chore/org-nav-release` | `wiki/logs/0/0/0/CHANGELOG.md`, `.agents/memory/state/` | MCEngine/client-reactjs#32 |
 
 One repository. No server change, no new page, no new dependency.
 
@@ -72,3 +72,11 @@ six links, a name and a button:
 
 The mobile menu still computes to `rgba(255, 255, 255, 0.98)` with `backdrop-filter: none`,
 which is the overlay rule holding with one more item in it.
+
+### Task 3 — chore/org-nav-release
+
+The changelog entry, the state file, and this record. `0.0.0` did not move.
+
+**Follow-up, not done here:** an endpoint listing an account's organizations, and a page for it.
+Until that exists the nav can only offer the create page, and an organization is reachable
+afterwards only through a product that belongs to it.

@@ -27,6 +27,11 @@ Plus the account, organization and fleet pages: `src/routes/account/`, `src/rout
 
 Plus the four `/product/*` pages: `src/routes/product/`.
 
+**The nav reaches every page a signed-in person needs except an organization list, which cannot
+exist yet.** *New organization* sits between *Servers* and *Tokens*; a list of the organizations
+an account belongs to needs an endpoint the contract does not have, and is the obvious next
+server-side step if organizations are to be browsable.
+
 **Ships as a container.** `Dockerfile` builds the bundle with Node and serves it from
 `nginxinc/nginx-unprivileged` on port 8080, with `docker/default.conf.template` proxying `/api`
 to `API_UPSTREAM` — the panel and the API are one origin by design, because the refresh cookie
