@@ -32,6 +32,11 @@ Plus the four `/product/*` pages: `src/routes/product/`.
 to `API_UPSTREAM` — the panel and the API are one origin by design, because the refresh cookie
 is `HttpOnly`. `wiki/environments/deployment.md` has the detail.
 
+**A wrong `API_UPSTREAM` fails, and says what is wrong.** The upstream is asked for its own
+`Host` rather than the browser's — the old behaviour turned a public address written without a
+scheme into an infinite redirect loop — and a `3xx` from the upstream becomes a `502` carrying
+the service's error envelope, which the panel renders like any other failure.
+
 **The image finds its API on any platform, not only on a Docker network.** `DNS_RESOLVER` is
 derived from `/etc/resolv.conf` by `docker/10-api-upstream.envsh` rather than defaulted to
 Docker's embedded DNS, and `API_UPSTREAM` takes an optional scheme — `https://host` is proxied

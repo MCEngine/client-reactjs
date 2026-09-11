@@ -98,4 +98,13 @@ one that asks.
   naming `API_UPSTREAM`, instead of "The server returned 502." A failure without an envelope was
   written by the proxy in front of the API rather than by the API; one *with* an envelope keeps
   the service's own message.
+- **The proxy no longer hands the browser's `Host` to the upstream, and no longer forwards an
+  upstream's redirect.** `Host: $host` meant a public API reached over plaintext answered
+  `301 https://<the panel's own hostname><path>`, which the browser followed back to the panel,
+  which proxied again — `ERR_TOO_MANY_REDIRECTS` on every `/api` request. The upstream is now
+  asked for its own `Host` (nginx's default), the browser's travels as `X-Forwarded-Host`,
+  `X-Forwarded-Proto` reports the scheme the browser used rather than the plaintext one this
+  container is addressed with, and a `3xx` from the upstream is answered as `502` carrying the
+  service's own error envelope — so the panel shows what is wrong instead of bouncing. The
+  container also warns at start-up when `API_UPSTREAM` names a dotted host over plaintext.
 

@@ -88,3 +88,7 @@ it receives: `Host: <itself>`, `X-Forwarded-Host: panel.example.com`, `X-Forward
 
 `test/docker.test.ts` is 16 cases now. The one that matters most asserts the template never
 sends `Host: $host`, which is the line that turned a wrong variable into a loop.
+
+### Task 3 — chore/upstream-redirect-release
+
+The changelog entry, the state file, and this record. `0.0.0` did not move.
