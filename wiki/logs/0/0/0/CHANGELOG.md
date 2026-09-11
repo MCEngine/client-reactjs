@@ -41,5 +41,9 @@ one that asks.
 
 ## Changed
 
+- **The publish form sends `PUT /api/v1/products/:id/versions/:version`**, with the version in
+  the path and out of the body — the server refuses a body version rather than ignoring it. An
+  empty version is caught before it becomes a path segment, because `required` is satisfied by
+  whitespace and an empty segment would 404 with nothing useful to read.
 - `README.md` rewritten from a bare title into an overview: what the panel is, its place in
   the platform, and links into `wiki/`.

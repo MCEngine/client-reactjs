@@ -166,12 +166,12 @@ describe('/product/:product_id/setting/update/', () => {
     },
   };
 
-  it('uploads one jar with its version and compatibility', async () => {
+  it('publishes to the version’s own URL, with the version out of the body', async () => {
     let sentBody: unknown;
     const client = testClient(
       stubFetch({
         ...base,
-        'POST /api/v1/products/01PROD/versions': {
+        'PUT /api/v1/products/01PROD/versions/1.11.0': {
           status: 201,
           body: { version: '1.11.0', channel: 'release', is_latest: true, published_at: null, compatibility: [] },
           onCall: (_u, init) => (sentBody = init.body),
@@ -193,11 +193,34 @@ describe('/product/:product_id/setting/update/', () => {
 
     await waitFor(() => expect(sentBody).toBeInstanceOf(FormData));
     const form = sentBody as FormData;
-    expect(form.get('version')).toBe('1.11.0');
+
+    // The stub keys on the exact URL, so reaching this line at all is the
+    // assertion that the version went into the path. It must not also be in the
+    // body: the server refuses that outright, rather than ignoring it.
+    expect(form.get('version')).toBeNull();
     expect(JSON.parse(String(form.get('compatibility')))).toEqual([
       { platform: 'paper', minecraftVersion: '1.21.11' },
     ]);
     expect(form.get('file')).toBeInstanceOf(File);
+  });
+
+  it('names the missing version rather than requesting /versions/', async () => {
+    // `required` is satisfied by whitespace, which trims to nothing — and an
+    // empty path segment would request /versions/ and come back as a 404 that
+    // says nothing about what the person got wrong.
+    const client = testClient(stubFetch(base));
+    renderWithAuth(<App />, client, '/product/acme-tools/setting/update');
+
+    await userEvent.type(await screen.findByLabelText('Version'), '   ');
+    await userEvent.upload(
+      screen.getByLabelText('Jar'),
+      new File([new Uint8Array([0x50, 0x4b, 3, 4])], 'AcmeTools.jar', {
+        type: 'application/java-archive',
+      }),
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Publish' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Enter a version');
   });
 
   it('offers exactly one file input, because a version carries one jar', async () => {
@@ -219,7 +242,7 @@ describe('/product/:product_id/setting/update/', () => {
     const client = testClient(
       stubFetch({
         ...base,
-        'POST /api/v1/products/01PROD/versions': {
+        'PUT /api/v1/products/01PROD/versions/1.11.0': {
           status: 422,
           body: {
             error: {
