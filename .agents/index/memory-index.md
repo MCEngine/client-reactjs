@@ -37,6 +37,7 @@ protocol's approval gate. See `{shared}/rules/memory-policy.md`.
 | [`tasks/org-management.md`](../memory/tasks/org-management.md) | This repository's entries in the organization management plan. The plan table itself lives in `MCEngine/server-expressjs`. |
 | [`tasks/token-provenance.md`](../memory/tasks/token-provenance.md) | The role chip escaping its card, and an organization token whose creator is recorded but reaches nobody: the confirmed six-task plan. |
 | [`tasks/news-and-pages.md`](../memory/tasks/news-and-pages.md) | This repository's entries in the news and reference pages plan. The plan table itself lives in `MCEngine/server-expressjs`. |
+| [`tasks/docker-test-shell.md`](../memory/tasks/docker-test-shell.md) | `test/docker.test.ts` resolving `sh` by absolute path so the suite runs on Windows, and skipping with a stated reason where no POSIX shell exists: the confirmed three-task plan. |
 
 ## Decisions
 
