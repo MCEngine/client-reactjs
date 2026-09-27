@@ -150,6 +150,74 @@
   }
 }
 
+/* ------------------------------------------------------------------ rail */
+
+/*
+ * Above 900px the header stops being a bar and becomes a rail down the left.
+ *
+ * Written as an override rather than as the base because the bar *is* the
+ * phone layout: a 236px rail on a 390px screen is most of the screen. `fixed`
+ * rather than `sticky` is what makes it follow the scroll independently of the
+ * page, and the rail scrolls inside itself when the navigation is taller than
+ * the viewport — which it will be, since this list only grows.
+ */
+@media (min-width: 901px) {
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: var(--rail-w);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+
+    border-bottom: none;
+    border-right: 1px solid var(--hairline);
+  }
+
+  .nav {
+    max-width: none;
+    min-height: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.3rem;
+    padding: 1.25rem 0.9rem 1.1rem;
+  }
+
+  .nav__brand {
+    font-size: 1.08rem;
+    padding: 0 0.55rem 0.9rem;
+  }
+
+  .nav__links {
+    flex-direction: column;
+    align-items: stretch;
+    margin-left: 0;
+    gap: 0.1rem;
+  }
+
+  .nav__link,
+  .nav__links .btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    border-radius: var(--radius-sm);
+  }
+
+  /* The rail is taken out of the flow, so the page has to make room for it. */
+  .shell {
+    padding-left: var(--rail-w);
+  }
+}
+
+/* The column the pages live in, beside the rail rather than under the bar. */
+.shell {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
 /* ---------------------------------------------------------------- footer */
 
 .site-footer {

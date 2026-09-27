@@ -128,6 +128,7 @@ export function App() {
         </nav>
       </header>
 
+      <div className="shell">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Products />} />
@@ -272,6 +273,7 @@ export function App() {
           </span>
         </div>
       </footer>
+      </div>
     </>
   );
 }
