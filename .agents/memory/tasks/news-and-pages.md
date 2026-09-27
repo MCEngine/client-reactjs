@@ -9,7 +9,21 @@ description: This repository's entries in the news and reference pages plan — 
 `.agents/memory/tasks/news-and-pages.md`, with the decisions behind it: who may write news, why
 hiding records a timestamp, and why Markdown is parsed into React elements rather than HTML.
 
-Tasks 4 to 8 are this repository's.
+Tasks 4 to 8 are this repository's. **The record closes when the last of these merges**, in this
+order — each targets the branch above it, and each is re-targeted to `master` before it is merged,
+because this repository does not delete a head branch on merge and a stacked pull request would
+otherwise merge into the branch below it and leave `master` behind:
+
+| # | Title | Branch | PR |
+|---|---|---|---|
+| 4 | Move the navigation to a rail on the left | `feat/sidebar-nav` | #40 |
+| 5 | Render Markdown as elements, never as HTML | `feat/markdown` | #41 |
+| 6 | The five news pages | `feat/news-pages` | #42 |
+| 7 | A policy page and a CI/CD page | `feat/reference-pages` | #43 |
+| 8 | Log the news pages, the rail and the reference pages | `chore/news-and-pages-release` | #44 |
+
+Tasks 1 to 3 are `MCEngine/server-expressjs`'s, and are merged — the plan table and the decisions
+behind it are on that side.
 
 ## Entries
 
