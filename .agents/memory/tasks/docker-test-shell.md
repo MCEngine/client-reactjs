@@ -61,3 +61,35 @@ with no shell at all; skipping that whole describe would drop coverage that neve
 ### Task 1 — chore/docker-test-shell-plan
 
 This record and its row in `.agents/index/memory-index.md`. Nothing else.
+
+### Task 2 — fix/docker-test-shell
+
+`test/docker.test.ts` resolves its shell through `resolveShell()`: `sh` everywhere, and on
+`win32` the absolute path of Git for Windows' `sh.exe`, checked in both the 64-bit and 32-bit
+Program Files locations. `platform()` from `node:os` rather than `process.platform`, because
+this file deliberately has no `process` global — `src/` is browser code and must never believe
+Node's globals exist. The fixed POSIX `PATH` is untouched: it is the reason the test means
+anything, and only the executable *name* lookup was broken.
+
+Only the tests that source the script are conditional — `the resolver` and `the upstream` in
+full, plus the one case in `the image and the template agree` that calls it. The other five in
+that describe read files and call `git` and keep running with no shell installed at all; skipping
+the whole describe would have dropped coverage that never needed one.
+
+**Verified on Linux: 119 passed, 0 failed, 0 skipped, `test/docker.test.ts` 16/16.** The suite
+is unchanged, which is the entire point of the exercise. The build is the same bundle to the
+kilobyte, 341.28 kB of JS and 14.62 kB of CSS.
+
+The skip branch was measured separately, with a throwaway file of the same 4 + 6 + 1 shape and no
+shell present, which reported **5 passed, 11 skipped** — exactly the eleven that need one. What
+is **not** verified here is Windows itself, which cannot be measured from a Linux machine. That
+claim is left to whoever runs the suite there, and the record says so rather than implying it.
+
+### Task 3 — chore/docker-test-shell-release
+
+The changelog entry, the state file, and this record. `0.0.0` did not move and no new log
+directory was created — the entry appends to the existing `0/0/0`.
+
+The state file's verified numbers were stale: it claimed 64 tests across seven suites and a
+310.05 kB bundle, both left over from before the news pages. Corrected to what this run measured,
+since a state file that claims to be current and is not is worse than no state file.

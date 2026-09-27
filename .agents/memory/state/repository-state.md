@@ -55,9 +55,11 @@ the service's error envelope, which the panel renders like any other failure.
 derived from `/etc/resolv.conf` by `docker/10-api-upstream.envsh` rather than defaulted to
 Docker's embedded DNS, and `API_UPSTREAM` takes an optional scheme — `https://host` is proxied
 with SNI and certificate verification, for an API that has no private address at all.
-`test/docker.test.ts` covers the script without needing a daemon. `@types/node` is a dev
-dependency for that suite only; `"types"` in `tsconfig.json` is unchanged, so `src/` still has
-no Node globals.
+`test/docker.test.ts` covers the script without needing a daemon, and runs on a machine with no
+POSIX shell: it resolves `sh` by absolute path where one exists, and skips the 11 tests that
+source the script, with a reason, where none does. The 5 tests that only read files and call
+`git` run everywhere. `@types/node` is a dev dependency for that suite only; `"types"` in
+`tsconfig.json` is unchanged, so `src/` still has no Node globals.
 
 **One origin is not a preference, it is the only supported configuration**, and the
 documentation now says so: the server has no CORS layer and hardcodes `SameSite=Lax`, so a
@@ -83,9 +85,9 @@ jsdom. Three runtime dependencies — React, React DOM and the router. No state 
 data-fetching library, no component library: the panel holds no state of its own, and a
 twelve-line `useAsync` covers what it needs from a read.
 
-**Verified:** `npm run check` green — `tsc --noEmit` clean and 64 tests across seven suites.
-`npm run build` produces 310.05 kB of JS (94.41 kB gzipped) and 13.03 kB of CSS (3.50 kB
-gzipped). The built bundle was also rendered in Chromium at 1280px and 390px: no page scrolls
+**Verified:** `npm run check` green — `tsc --noEmit` clean and 119 tests across 13 suites, none
+skipped. `npm run build` produces 341.28 kB of JS (101.78 kB gzipped) and 14.62 kB of CSS
+(3.88 kB gzipped). The built bundle was also rendered in Chromium at 1280px and 390px: no page scrolls
 horizontally, and the mobile menu computes to `rgba(255, 255, 255, 0.98)` with
 `backdrop-filter: none`, which is the overlay rule holding rather than being asserted.
 
