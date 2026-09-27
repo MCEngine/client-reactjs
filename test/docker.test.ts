@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, writeFileSync, readFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { mkdtempSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
+import { tmpdir, platform } from 'node:os';
 import { join } from 'node:path';
 
 /**
@@ -18,8 +18,33 @@ import { join } from 'node:path';
 const SCRIPT = 'docker/10-api-upstream.envsh';
 const TEMPLATE = 'docker/default.conf.template';
 
+/**
+ * `sh` is resolved by absolute path on Windows.
+ *
+ * This suite hands the script a POSIX PATH so the environment cannot
+ * decide what the container would do — and on Windows that same PATH
+ * is what Node uses to resolve the executable, so a bare `sh` is
+ * ENOENT before the script is ever read. Git for Windows ships a real
+ * POSIX shell, so it is used when it is present, and the suite skips
+ * itself with a reason when it is not, rather than failing on a
+ * missing binary.
+ */
+function resolveShell(): string | null {
+  if (platform() !== 'win32') return 'sh';
+  for (const candidate of [
+    'C:\\Program Files\\Git\\bin\\sh.exe',
+    'C:\\Program Files (x86)\\Git\\bin\\sh.exe',
+  ]) {
+    if (existsSync(candidate)) return candidate;
+  }
+  return null;
+}
+
+const SHELL = resolveShell();
+const hasShell = SHELL !== null;
+
 function sourceScript(env: Record<string, string>): Record<string, string> {
-  const out = execFileSync('sh', ['-c', `. ./${SCRIPT} >/dev/null; env`], {
+  const out = execFileSync(SHELL!, ['-c', `. ./${SCRIPT} >/dev/null; env`], {
     encoding: 'utf8',
     // A clean environment: whatever the developer has exported must not decide
     // what the container would do. PATH is written out rather than inherited
@@ -44,7 +69,7 @@ function withResolvConf(contents: string): string {
   return path;
 }
 
-describe('the resolver', () => {
+describe.skipIf(!hasShell)('the resolver', () => {
   it('comes from resolv.conf when nothing set it', () => {
     const env = sourceScript({
       API_UPSTREAM: 'server:3000',
@@ -76,7 +101,7 @@ describe('the resolver', () => {
   });
 });
 
-describe('the upstream', () => {
+describe.skipIf(!hasShell)('the upstream', () => {
   const resolv = () => withResolvConf('nameserver 10.0.0.2\n');
 
   it('takes host:port as plaintext, and asks the upstream for its own Host', () => {
@@ -166,7 +191,7 @@ describe('the image and the template agree', () => {
     expect(template).toMatch(/proxy_set_header\s+X-Forwarded-Proto\s+\$forwarded_proto;/);
   });
 
-  it('substitutes only values the script exports or the image sets', () => {
+  it.skipIf(!hasShell)('substitutes only values the script exports or the image sets', () => {
     const template = readFileSync(TEMPLATE, 'utf8');
     const referenced = [...template.matchAll(/\$\{([A-Za-z_][A-Za-z0-9_]*)\}/g)].map((m) => m[1]);
     const exported = sourceScript({ RESOLV_CONF: withResolvConf('nameserver 10.0.0.2\n') });
