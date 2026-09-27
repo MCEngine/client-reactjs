@@ -149,4 +149,13 @@ one that asks.
   deployment, with `PLUGIN_ID` and `USER_TOKEN` explained and named as the developer's to rename.
 - `/policy` — what may be published, what is guaranteed about a download, and exactly what the
   service stores.
+- **`test/docker.test.ts` runs on Windows.** It sources the image's start-up script under a fixed
+  POSIX `PATH`, deliberately, so the developer's own environment cannot decide what the container
+  would do — and on Windows that same `PATH` is what Node resolves the *executable name* against,
+  so a bare `sh` came back `ENOENT` before the script was ever read, failing 11 of the file's 16
+  tests. Git for Windows ships a real POSIX shell, so `sh.exe` is now found by absolute path when
+  `platform()` is `win32`; where no shell exists at all, the 11 tests that source the script skip
+  with a reason rather than failing on a missing binary. The 5 that only read files and call `git`
+  still run on every platform. The script, the template and the bundle are unchanged, and on Linux
+  the suite is what it always was: 119 passed, none skipped.
 
