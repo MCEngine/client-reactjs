@@ -553,3 +553,52 @@ details.acc[open] > summary::before {
   align-items: baseline;
   justify-content: space-between;
 }
+
+/* ------------------------------------------------------------------ prose */
+
+/*
+ * A rendered Markdown body.
+ *
+ * Scoped, because these are the only place in the panel where a heading, a
+ * list and a quote are written by somebody other than whoever wrote the page.
+ */
+.prose {
+  max-width: 72ch;
+}
+
+.prose > :first-child {
+  margin-top: 0;
+}
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  margin: 1.8rem 0 0.6rem;
+}
+
+.prose p,
+.prose ul,
+.prose ol {
+  margin: 0 0 1rem;
+}
+
+.prose li {
+  margin: 0.25rem 0;
+}
+
+.prose blockquote {
+  margin: 0 0 1rem;
+  padding: 0.1rem 0 0.1rem 1rem;
+  border-left: 3px solid var(--accent-soft);
+  color: var(--ink-500);
+}
+
+.prose hr {
+  border: 0;
+  border-top: 1px solid var(--hairline);
+  margin: 2rem 0;
+}
+
+.md-code {
+  overflow-x: auto;
+}

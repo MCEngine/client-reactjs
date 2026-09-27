@@ -32,3 +32,21 @@ Measured in Chromium at four widths, including both sides of the breakpoint:
 | Page starts at | 236px | 236px | 0 | 0 |
 | Top after scrolling 400px | 0 | 0 | 0 | 0 |
 | Horizontal overflow | none | none | none | none |
+
+### Task 5 — feat/markdown
+
+`src/components/Markdown.tsx` parses a documented subset into **React elements**. There is no
+HTML in the file and no `dangerouslySetInnerHTML`, which is the whole design: the usual approach
+turns Markdown into an HTML string and then needs a sanitizer, and a sanitizer is a list of the
+things somebody thought of. A `<script>` in a body renders as a paragraph reading `<script>`,
+because that is what it is.
+
+The one vector that survives building elements is an `href`, since React will render
+`javascript:` into one — so a link keeps its text and loses its link unless the scheme is
+`http`, `https`, `mailto`, `/` or `#`.
+
+Nine cases, three of them about exactly that: a script tag, an `img onerror`, and hrefs that try
+`JaVaScRiPt:` and `data:`.
+
+`.prose` in `components.css` styles a rendered body — the only place in the panel where a heading
+or a list is written by somebody other than whoever wrote the page.
