@@ -9,7 +9,21 @@ description: This repository's entries in the news and reference pages plan — 
 `.agents/memory/tasks/news-and-pages.md`, with the decisions behind it: who may write news, why
 hiding records a timestamp, and why Markdown is parsed into React elements rather than HTML.
 
-Tasks 4 to 8 are this repository's.
+Tasks 4 to 8 are this repository's. **The record closes when the last of these merges**, in this
+order — each targets the branch above it, and each is re-targeted to `master` before it is merged,
+because this repository does not delete a head branch on merge and a stacked pull request would
+otherwise merge into the branch below it and leave `master` behind:
+
+| # | Title | Branch | PR |
+|---|---|---|---|
+| 4 | Move the navigation to a rail on the left | `feat/sidebar-nav` | #40 |
+| 5 | Render Markdown as elements, never as HTML | `feat/markdown` | #41 |
+| 6 | The five news pages | `feat/news-pages` | #42 |
+| 7 | A policy page and a CI/CD page | `feat/reference-pages` | #43 |
+| 8 | Log the news pages, the rail and the reference pages | `chore/news-and-pages-release` | #44 |
+
+Tasks 1 to 3 are `MCEngine/server-expressjs`'s, and are merged — the plan table and the decisions
+behind it are on that side.
 
 ## Entries
 
@@ -103,3 +117,12 @@ registered server reports. Everything on it is something this software actually 
 Checked in Chromium at both widths. At 390px the two `<code>` blocks are wider than the viewport
 and the page is not: they are inside `pre.md-code`, which scrolls on its own. That is the
 design's rule for code rather than an exception to it.
+
+### Task 8 — chore/news-and-pages-release
+
+The changelog entries, the state file, and this record. `0.0.0` did not move.
+
+**Left for later, deliberately:** the news list shows a hidden item to an author with no way to
+filter for only the hidden ones, and there is no page listing every news item for editing — you
+reach one through the list or its address. Both want a route that does not exist yet rather than
+a guess at one.
