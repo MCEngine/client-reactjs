@@ -81,3 +81,25 @@ after scroll 3:  25 items, 3 requests   (a short page ends it)
 
 and the detail page at 1280 and 390: `h1` "Release 25", the body's own `#` rendering as an `h2`
 under it, `**shipped**` bold, no horizontal overflow.
+
+### Task 7 — feat/reference-pages
+
+`/ci-cd` carries both files whole — GitHub Actions and GitLab CI — because what a person wants
+from that page is something to commit, not a description of it. The base URL is
+`window.location.origin`, so a copy works without a third variable to set, and the page says
+outright that `PLUGIN_ID` and `USER_TOKEN` are names the developer owns and may rename as long as
+the `curl` line changes with them. It also says which is a secret and which is not, and why:
+GitHub masks a secret in logs and does not mask a variable.
+
+`--fail-with-body` is in both, and the page says why — a rejected publish has to fail the job
+*and* print what the server said, or it looks like a successful one.
+
+`/policy` is the operator's policy, and says so: what may be published (the jars are executed by
+the servers that install them), what is guaranteed about a download, that removal is the
+operator's and there is no built-in reporting route to pretend otherwise, and exactly what is
+stored — the scrypt hash, the session digests, the token digests, the audit trail, what a
+registered server reports. Everything on it is something this software actually does.
+
+Checked in Chromium at both widths. At 390px the two `<code>` blocks are wider than the viewport
+and the page is not: they are inside `pre.md-code`, which scrolls on its own. That is the
+design's rule for code rather than an exception to it.
