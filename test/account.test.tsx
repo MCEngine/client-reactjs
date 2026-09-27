@@ -242,7 +242,7 @@ describe('tokens', () => {
     expect(onCall).not.toHaveBeenCalled();
 
     await userEvent.click(screen.getByRole('button', { name: 'Revoke' }));
-    const dialog = screen.getByRole('group', { name: 'Revoke' });
+    const dialog = screen.getByRole('dialog', { name: 'Revoke' });
     await userEvent.click(within(dialog).getByRole('button', { name: 'Revoke' }));
     await waitFor(() => expect(onCall).toHaveBeenCalledTimes(1));
   });

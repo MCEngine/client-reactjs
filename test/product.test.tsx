@@ -338,7 +338,7 @@ describe('/product/:product_id/setting/general/', () => {
     expect(onCall).not.toHaveBeenCalled();
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
 
-    const dialog = screen.getByRole('group', { name: 'Delete this product' });
+    const dialog = screen.getByRole('dialog', { name: 'Delete this product' });
     const confirm = within(dialog).getByRole('button', { name: 'Delete permanently' });
     expect(confirm).toBeDisabled();
 
@@ -365,7 +365,7 @@ describe('/product/:product_id/setting/general/', () => {
     await screen.findByRole('heading', { name: 'Delete this product' });
 
     await userEvent.click(screen.getByRole('button', { name: 'Delete this product' }));
-    const dialog = screen.getByRole('group', { name: 'Delete this product' });
+    const dialog = screen.getByRole('dialog', { name: 'Delete this product' });
     await userEvent.type(within(dialog).getByRole('textbox'), 'acme-tools');
     await userEvent.click(within(dialog).getByRole('button', { name: 'Delete permanently' }));
 
